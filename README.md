@@ -4,22 +4,22 @@
 
 ## Project Overview
 
-This project explores how migratory bird observations vary across London across seasons, and how urban environmental conditions influence hotspot formation and ecological pressure.
+This project investigates how migratory bird observations vary across London through different seasons, and how urban environmental conditions relate to hotspot formation and potential ecological pressure.
 
-Using bird observation records from NBN Atlas, environmental data derived from OpenStreetMap, and MSOA-level spatial aggregation, we developed an interactive storytelling website that combines spatial visualisation, environmental comparison and planning-oriented interpretation.
+Using bird observation records from NBN Atlas, environmental layers derived from OpenStreetMap, and MSOA-level spatial aggregation, we developed an interactive website that combines spatial storytelling, statistical comparison and planning-oriented interpretation.
 
-The project focuses on three representative migratory bird species — **Swift, Swallow and House Martin** — selected from the ten most frequently recorded migratory species in London because they show different seasonal rhythms and distinct ways of using urban environments.
+Three focal migratory bird species — **Swift, Swallow and House Martin** — were selected from the ten most frequently recorded migratory species because they show distinct seasonal rhythms and different ways of using urban environments.
 
-The website is designed not only to visualise bird distribution, but also to support spatial thinking about where urban ecological attention may be needed.
+The website aims to move from simple observation mapping towards a clearer spatial explanation of where ecological attention may be needed in London.
 
 ---
 
 ## Research Questions
 
-* Why were Swift, Swallow and House Martin selected as focal migratory species?
-* How do migratory bird hotspots shift across seasons in London?
+* Why were Swift, Swallow and House Martin selected as focal species?
+* How do bird hotspots vary across seasons in London?
 * What urban environmental conditions distinguish hotspot and non-hotspot areas?
-* How can Bird Habitat Pressure be interpreted spatially to identify planning-sensitive areas?
+* Which urban areas may deserve ecological attention under stronger habitat pressure?
 
 ---
 
@@ -33,75 +33,68 @@ The website is organised into five main sections:
 * **Attention Zones**
 * **Future**
 
-Three main interactive modules are embedded across the website, supported by two statistical visualisations.
+The analytical narrative follows a progressive structure:
 
-### Interactive Modules
+**species selection → seasonal dynamics → hotspot identification → environmental comparison → habitat pressure interpretation → planning-sensitive areas**
 
-1. **Spatial Hotspots**
-   Seasonal MSOA hotspot map showing species and seasonal differences.
-
-2. **Urban Habitat Explorer**
-   Environmental layer comparison for hotspot areas.
-
-3. **Attention Zone Classification**
-   Planning-oriented ecological attention map using Bird Habitat Pressure logic.
-
-### Statistical Visualisations
-
-* Top 10 migratory species ranking chart
-* Monthly seasonal observation trends of selected species
+Three interactive modules are embedded across the website, supported by two statistical visualisations.
 
 ---
 
-## Methodological Logic
+## Main Interactive Components
 
-The analytical workflow follows a progressive narrative:
+### Interactive Visualisation 1 — Spatial Hotspots
 
-**Species selection → Seasonal dynamics → Spatial hotspots → Environmental comparison → Habitat pressure interpretation → Planning attention zones**
+This section explores where bird observations concentrate across seasons.
 
-### Species Selection
+Main interactions include:
 
-The ten most frequently recorded migratory bird species were first identified using NBN Atlas records.
+* species switching
+* seasonal switching
+* MSOA hotspot comparison
+* hotspot ranking feedback
 
-Three focal species were then selected:
+This module focuses on identifying where and when bird activity becomes spatially concentrated.
 
-* **Swift**
-* **Swallow**
-* **House Martin**
+---
 
-These species were chosen because they represent different temporal patterns and urban ecological behaviours.
+### Interactive Visualisation 2 — Urban Habitat Explorer
 
-### Spatial Analysis
+This section examines environmental conditions associated with hotspot areas.
 
-Bird observations were aggregated at **MSOA level** to visualise spatial concentration patterns.
+Main interactions include:
 
-Seasonal switching was used to compare:
+* environmental layer switching
+* hotspot click comparison
+* local habitat profile feedback
 
-* Spring arrival
-* Summer activity peak
-* Autumn decline
+The module allows comparison of green space, water proximity and built density across selected areas.
 
-### Environmental Comparison
+---
 
-Hotspot and non-hotspot areas were compared using:
+### Interactive Visualisation 3 — Attention Zone Classification
 
-* Green infrastructure
-* Blue infrastructure
-* Built density
-* Road pressure
+This section interprets areas where bird hotspots overlap with stronger urban pressure.
 
-### Bird Habitat Pressure (BHP)
+It introduces Bird Habitat Pressure (BHP) as a simplified planning-oriented indicator.
 
-Bird Habitat Pressure is used as a planning-oriented proxy to summarise where bird hotspots overlap with stronger urban environmental pressure.
+Main outputs include:
 
-It combines:
+* pressure classification
+* ecological attention zones
+* suggested spatial interpretation
 
-* built pressure
-* road pressure
-* limited green cover
-* limited blue infrastructure
+---
 
-BHP is not a direct ecological health score, but a simplified spatial indicator for identifying areas where ecological attention may be more necessary.
+## Statistical Visualisations
+
+### Top 10 Migratory Species Chart
+
+Used to explain why three focal species were selected.
+
+### Monthly Seasonal Pattern Chart
+
+Used to show seasonal differences across selected species.
 
 ---
 
@@ -119,7 +112,7 @@ BHP is not a direct ecological health score, but a simplified spatial indicator 
 
 ## Repository Structure
 
-```text
+```text id="bqun2v"
 ├── index.html
 ├── style.css
 ├── app.js
@@ -139,77 +132,56 @@ BHP is not a direct ecological health score, but a simplified spatial indicator 
 ├── README.md
 ```
 
-Please adjust filenames if necessary according to the final repository structure.
-
 ---
 
 ## How to Run Locally
 
-1. Clone this repository:
-
-```bash
-git clone [repository-link]
-```
-
-2. Open the folder in **VS Code**
-
-3. Run with **Live Server**
-
+1. Clone the repository
+2. Open the project folder in **VS Code**
+3. Run using **Live Server**
 4. Open `index.html` in browser
 
-### Important Note
+### Important
 
-GeoJSON layers may not load correctly if the file is opened directly in browser.
-
-A local server environment is required.
-
----
-
-## Key Features
-
-* Species toggle across three focal birds
-* Seasonal hotspot switching
-* Hover-based MSOA information
-* Environmental layer comparison
-* Dynamic habitat profile feedback
-* Bird Habitat Pressure interpretation
-* Planning-sensitive ecological classification
+GeoJSON files may not load correctly if opened directly in browser. A local server environment is required.
 
 ---
 
 ## Planning Relevance
 
-The project aims to demonstrate how spatial bird observations can support urban ecological thinking.
+This project explores how bird observation patterns can support urban ecological interpretation.
 
 Potential planning relevance includes:
 
-* identifying ecological corridors
-* recognising pressure-sensitive hotspot areas
-* supporting biodiversity-sensitive urban development
-* improving green-blue connectivity
+* identifying ecologically sensitive hotspot areas
+* recognising pressure-sensitive urban zones
+* supporting biodiversity-oriented green connectivity
+* informing development-sensitive ecological thinking
 
 ---
 
 ## Limitations
 
-* Observation records may reflect reporting bias.
-* Environmental indicators simplify complex ecological relationships.
+* Observation data may contain reporting bias.
+* Environmental indicators simplify ecological relationships.
 * Species-specific habitat behaviour cannot be fully explained by urban form alone.
 
 ---
 
 ## Team Contributions
 
-* **Xuchen Xi** — website framework, interactive visualisation, technical integration
-* **Xiaoyi Wang** — statistical charts, explanatory text, content organisation
-* **Yutong Xu** — indicator logic, methodology support, BHP section
-
-All team members contributed to conceptual development and final review.
+| Task Name                                                                       | Major Contributors     | Additional Contributors | Use of AI Tools in this Task                                                                                                                                                  |
+| ------------------------------------------------------------------------------- | ---------------------- | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Concept Development and overall project planning                                | All team members       |                         | No AI use                                                                                                                                                                     |
+| Indicator design (BHP), methodology development and Interactive Visualisation 3 | Xuchen Xi              |                         | ChatGPT was used only for limited language refinement during drafting; methodological design and coding decisions were independently developed and checked against literature |
+| Interactive Visualisation 1, statistical charts and website text writing        | Xiaoyi Wang            |                         | AI tools were used only to improve wording clarity in explanatory text; chart design and visual outputs were manually produced and adjusted                                   |
+| Interactive Visualisation 2 and website framework                               | Yutong Xu              |                         | ChatGPT was used to assist front-end debugging, layout refinement and interface adjustment; final structure and interaction logic were manually revised                       |
+| Website content integration                                                     | Xiaoyi Wang, Xuchen Xi | Yutong Xu               | ChatGPT was used selectively for wording refinement only                                                                                                                      |
 
 ---
 
 ## Use of AI Tools
 
-ChatGPT was used selectively for front-end debugging, layout refinement and language polishing.
+AI tools were used only for limited technical debugging, wording refinement and front-end adjustment.
 
-All analytical decisions, spatial processing and methodological interpretation were manually checked and revised by the group.
+All spatial analysis, methodological interpretation, indicator logic and final outputs were manually checked, revised and integrated by the group.
