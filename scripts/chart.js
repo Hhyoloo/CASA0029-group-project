@@ -6,6 +6,8 @@ const chartText = "#263128";
 const chartMuted = "#667267";
 const gridLine = "rgba(65, 75, 58, 0.14)";
 const settingColors = {
+  "Core Habitat": "#58c4a3",
+  "Restoration Corridor": "#66a6ff",
   "Green-rich": "#6f8f63",
   "Water-linked": "#6fa8b8",
   "Built-up": "#b8735a",
@@ -17,6 +19,23 @@ Chart.defaults.color = chartText;
 Chart.defaults.plugins.tooltip.backgroundColor = "rgba(38, 49, 40, 0.9)";
 Chart.defaults.plugins.tooltip.padding = 10;
 Chart.defaults.plugins.tooltip.cornerRadius = 8;
+
+
+function applyPremiumChartTheme() {
+  Chart.defaults.animation = { duration: 720, easing: "easeOutQuart" };
+  Chart.defaults.plugins.legend.labels.usePointStyle = true;
+  Chart.defaults.elements.line.tension = 0.28;
+}
+
+applyPremiumChartTheme();
+
+
+function makeSoftGradient(ctx, c1, c2) {
+  const g = ctx.createLinearGradient(0, 0, 0, 260);
+  g.addColorStop(0, c1);
+  g.addColorStop(1, c2);
+  return g;
+}
 
 function createCompareChart() {
   const ctx = document.getElementById("compareChart");
@@ -51,7 +70,7 @@ function createCompareChart() {
 }
 
 function updateCompareChart(selected) {
-  const palette = ["#7e546c", "#6fa8b8"];
+  const palette = ["#ff8a7a", "#63c7de"];
   compareChart.data.datasets = selected.map((feature, index) => {
     const p = feature.properties;
     const scores = p._scores || { green: 0, water: 0, built: 0 };

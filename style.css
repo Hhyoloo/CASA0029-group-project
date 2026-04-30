@@ -1786,3 +1786,50 @@ select {
     margin: 14px;
   }
 }
+
+
+/* 85+ polish theme patch */
+:root {
+  --accent-1: #ff6b6b;
+  --accent-2: #ffb86b;
+  --accent-3: #67d5b5;
+  --accent-4: #5eb6ff;
+  --glass: rgba(255, 255, 255, 0.78);
+}
+
+.site-nav {
+  background: linear-gradient(120deg, rgba(255,248,232,0.94), rgba(235,248,255,0.90));
+}
+
+.chapter-menu[open] summary,
+.chapter-menu summary:hover,
+.nav-next:hover {
+  background: linear-gradient(135deg, var(--accent-2), #f0bb45);
+}
+
+.menu-panel {
+  background: var(--glass);
+  box-shadow: 0 18px 40px rgba(11, 36, 42, 0.14);
+}
+
+/* final deep polish pack */
+body {
+  background-attachment: fixed;
+}
+
+.site-nav {
+  border: 1px solid rgba(255,255,255,0.35);
+  box-shadow: 0 14px 40px rgba(31, 36, 52, 0.14);
+}
+
+.menu-panel button {
+  transition: transform .18s ease, background .18s ease;
+}
+
+.menu-panel button:hover {
+  transform: translateX(4px);
+}
+
+.chapter {
+  backdrop-filter: blur(6px);
+}
