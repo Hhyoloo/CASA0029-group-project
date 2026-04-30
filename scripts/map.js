@@ -654,3 +654,17 @@ Promise.all([
     console.error(err);
     alert("Cannot load habitat data. Check bird_hotspot, urban_condition_summary, woodland_final and water_final paths.");
   });
+
+function enableSingleOpenMenus() {
+  const menus = [...document.querySelectorAll('.site-nav details, .chapter-menu')];
+  menus.forEach(menu => {
+    menu.addEventListener('toggle', () => {
+      if (!menu.open) return;
+      menus.forEach(other => {
+        if (other !== menu) other.open = false;
+      });
+    });
+  });
+}
+
+document.addEventListener('DOMContentLoaded', enableSingleOpenMenus);

@@ -565,7 +565,7 @@
     </a>
     <div class="nav-links">
       <details open>
-        <summary>Introduction</summary>
+        <summary>简介 Introduction</summary>
         <div class="dropdown">
           <a href="#home">Home</a>
           <a href="#why-birds">Why Birds in London?</a>
@@ -573,7 +573,7 @@
         </div>
       </details>
       <details>
-        <summary>Movement</summary>
+        <summary>运动 Movement</summary>
         <div class="dropdown">
           <a href="#seasonal-rhythms">Seasonal Rhythms</a>
           <a href="#migration-peaks">Migration Peaks</a>
@@ -581,7 +581,7 @@
         </div>
       </details>
       <details>
-        <summary>Habitat</summary>
+        <summary>栖息地 Habitat</summary>
         <div class="dropdown">
           <a href="#urban-habitat-lens">Urban Habitat Lens</a>
           <a href="#hotspot-comparison">Hotspot Comparison</a>
@@ -589,7 +589,7 @@
         </div>
       </details>
       <details>
-        <summary>Explorer</summary>
+        <summary>探险者 Explorer</summary>
         <div class="dropdown">
           <a href="#bhp-index">BHP Index</a>
           <a href="#hotspot-explorer">Hotspot Explorer</a>
@@ -598,7 +598,7 @@
         </div>
       </details>
       <details>
-        <summary>Future</summary>
+        <summary>未来 Future</summary>
         <div class="dropdown">
           <a href="#planning-flyway">Planning the Flyway</a>
           <a href="#limitations">Limitations</a>
@@ -1444,6 +1444,12 @@
     }
 
     function bindUI() {
+      const navDetails = [...document.querySelectorAll(".nav-links details")];
+      navDetails.forEach(d => d.addEventListener("toggle", () => {
+        if (!d.open) return;
+        navDetails.forEach(other => { if (other !== d) other.open = false; });
+      }));
+
       document.querySelectorAll("#topMode button").forEach(b => b.addEventListener("click", () => {
         if (!b.dataset.mode) return;
         document.querySelectorAll("#topMode button").forEach(x => x.classList.toggle("active", x === b));
