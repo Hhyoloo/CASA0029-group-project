@@ -1,4 +1,4 @@
-🔗 Live Website: https://hhyoloo.github.io/casa0025-group-project/
+🔗 Live Website: https://hhyoloo.github.io/CASA0029-group-project/
 
 📍 Module: CASA0029 Data Visualisation
 
