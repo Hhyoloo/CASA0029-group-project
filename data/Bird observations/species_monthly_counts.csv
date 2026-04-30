@@ -1,0 +1,37 @@
+﻿common_name,scientific_name,month,month_name,season,record_count
+House Martin,Delichon urbicum,1,January,Winter,17
+House Martin,Delichon urbicum,2,February,Winter,11
+House Martin,Delichon urbicum,3,March,Spring,664
+House Martin,Delichon urbicum,4,April,Spring,24256
+House Martin,Delichon urbicum,5,May,Spring,57009
+House Martin,Delichon urbicum,6,June,Summer,54173
+House Martin,Delichon urbicum,7,July,Summer,46169
+House Martin,Delichon urbicum,8,August,Summer,50215
+House Martin,Delichon urbicum,9,September,Autumn,38488
+House Martin,Delichon urbicum,10,October,Autumn,6957
+House Martin,Delichon urbicum,11,November,Autumn,362
+House Martin,Delichon urbicum,12,December,Winter,36
+Swallow,Hirundo rustica,1,January,Winter,35
+Swallow,Hirundo rustica,2,February,Winter,17
+Swallow,Hirundo rustica,3,March,Spring,2334
+Swallow,Hirundo rustica,4,April,Spring,51120
+Swallow,Hirundo rustica,5,May,Spring,61755
+Swallow,Hirundo rustica,6,June,Summer,42675
+Swallow,Hirundo rustica,7,July,Summer,36905
+Swallow,Hirundo rustica,8,August,Summer,44666
+Swallow,Hirundo rustica,9,September,Autumn,38935
+Swallow,Hirundo rustica,10,October,Autumn,11482
+Swallow,Hirundo rustica,11,November,Autumn,995
+Swallow,Hirundo rustica,12,December,Winter,40
+Swift,Apus apus,1,January,Winter,15
+Swift,Apus apus,2,February,Winter,26
+Swift,Apus apus,3,March,Spring,23
+Swift,Apus apus,4,April,Spring,7009
+Swift,Apus apus,5,May,Spring,76083
+Swift,Apus apus,6,June,Summer,75400
+Swift,Apus apus,7,July,Summer,66408
+Swift,Apus apus,8,August,Summer,25487
+Swift,Apus apus,9,September,Autumn,3503
+Swift,Apus apus,10,October,Autumn,140
+Swift,Apus apus,11,November,Autumn,16
+Swift,Apus apus,12,December,Winter,4
