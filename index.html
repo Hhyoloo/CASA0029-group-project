@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>London Flyways | Urban Bird Hotspots</title>
+  <link rel="icon" href="data:," />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg: #fbf5ea;
+      --paper: #fff9ef;
+      --paper-2: #fff3df;
+      --ink: #1f2f2a;
+      --muted: #6b756d;
+      --line: rgba(55, 42, 25, 0.14);
+      --red: #ff6568;
+      --orange: #ff9a5c;
+      --mint: #8bd4ae;
+      --aqua: #76d8d2;
+      --sky: #6bc5ee;
+      --leaf: #4ea66b;
+      --water: #3fa7bd;
+      --built: #c47b55;
+      --gold: #e7ad3d;
+      --shadow: 0 24px 70px rgba(72, 45, 16, 0.14);
+      --soft-shadow: 0 12px 30px rgba(72, 45, 16, 0.10);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: Inter, "Segoe UI", Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(255, 154, 92, 0.10), transparent 28%),
+        radial-gradient(circle at 85% 8%, rgba(118, 216, 210, 0.16), transparent 26%),
+        linear-gradient(180deg, #fffaf1 0%, #fbf5ea 52%, #fffdf7 100%);
+      cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 64 64'%3E%3Cpath d='M12 38c10-13 21-20 39-24-7 8-12 16-14 25 4 4 9 7 15 9-12 1-22-3-30-10-4 1-7 1-10 0z' fill='%231f2f2a'/%3E%3Ccircle cx='38' cy='22' r='3' fill='%23fff9ef'/%3E%3C/svg%3E") 2 2, auto;
+    }
+
+    button, select, a { font: inherit; }
+    button, a, select { cursor: pointer; }
+    p { color: var(--muted); line-height: 1.62; margin: 0; }
+    h1, h2, h3, h4 { margin: 0; letter-spacing: 0; }
+    h1 { font-size: clamp(44px, 6vw, 82px); line-height: 0.95; max-width: 760px; }
+    h2 { font-size: clamp(30px, 3.3vw, 52px); line-height: 1.02; }
+    h3 { font-size: 24px; line-height: 1.14; }
+    h4 { font-size: 16px; }
+
+    .site-nav {
+      position: sticky;
+      top: 14px;
+      z-index: 1200;
+      width: min(1240px, calc(100% - 28px));
+      margin: 14px auto 0;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 14px;
+      align-items: center;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 249, 239, 0.88);
+      box-shadow: var(--soft-shadow);
+      backdrop-filter: blur(16px);
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #ffd9d3, #fff1b8);
+      color: var(--ink);
+      text-decoration: none;
+      font-weight: 900;
+    }
+
+    .brand svg { width: 28px; height: 28px; fill: none; stroke: var(--ink); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+    .nav-links { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+    .nav-links details { position: relative; }
+    .nav-links summary {
+      list-style: none;
+      min-width: 132px;
+      padding: 12px 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 249, 239, 0.78);
+      color: var(--ink);
+      font-size: 16px;
+      font-weight: 650;
+      letter-spacing: 0.02em;
+    }
+    .nav-links summary::-webkit-details-marker { display: none; }
+    .nav-links summary::after { content: "▾"; margin-left: 8px; font-size: 12px; }
+    .nav-links details[open] > summary {
+      background: #c49a50;
+      color: #fffaf1;
+      box-shadow: var(--soft-shadow);
+    }
+    .dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      min-width: 220px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: rgba(255, 249, 239, 0.88);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+    .dropdown a {
+      display: block;
+      padding: 13px 18px;
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 500;
+    }
+    .dropdown a:hover { background: rgba(196, 154, 80, 0.18); color: #8f4d22; }
+    .nav-links > a {
+      padding: 9px 12px;
+      border-radius: 999px;
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 850;
+    }
+    .nav-links > a:hover, .nav-links > a.active { background: #ffe1d4; }
+
+    .nav-next, .primary, .secondary, .tiny-btn {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      min-height: 40px;
+      padding: 9px 14px;
+      color: var(--ink);
+      background: var(--paper);
+      font-weight: 900;
+      box-shadow: 0 8px 18px rgba(72, 45, 16, 0.08);
+    }
+    .primary, .nav-next { background: var(--ink); color: var(--paper); }
+    .secondary { background: linear-gradient(135deg, #ffe0d7, #fff2b8); }
+    .tiny-btn { min-height: 34px; padding: 7px 11px; font-size: 12px; }
+
+    main { width: min(1320px, calc(100% - 32px)); margin: 18px auto 80px; }
+    .section {
+      position: relative;
+      min-height: auto;
+      margin: 28px 0 54px;
+      padding: 46px 34px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(255, 252, 246, 0.62);
+      box-shadow: 0 14px 42px rgba(72, 45, 16, 0.08);
+      overflow: hidden;
+      scroll-margin-top: 96px;
+    }
+    .section::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(86, 64, 35, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(86, 64, 35, 0.035) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: linear-gradient(180deg, black, transparent 90%);
+    }
+    .section > * { position: relative; z-index: 1; }
+
+    .eyebrow {
+      margin-bottom: 8px;
+      color: #a44b34;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 11px;
+      font-weight: 950;
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(340px, 0.82fr) minmax(360px, 1fr);
+      gap: 28px;
+      align-items: end;
+      margin-bottom: 22px;
+    }
+
+    .home {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(420px, 0.78fr);
+      align-items: center;
+      gap: 34px;
+      min-height: calc(100vh - 120px);
+    }
+    .hero-copy { display: grid; gap: 18px; }
+    .hero-copy p { max-width: 670px; font-size: 18px; }
+    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+    .hero-visual {
+      min-height: 560px;
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      overflow: hidden;
+      background: linear-gradient(180deg, #fffaf1, #ffe9d9);
+      box-shadow: var(--shadow);
+    }
+    .hero-visual img { width: 100%; height: 420px; object-fit: cover; display: block; }
+    .hero-caption { padding: 22px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .hero-caption div { padding: 14px; border-radius: 16px; background: rgba(255,255,255,0.55); }
+    .hero-caption span { display: block; color: #a44b34; font-size: 12px; font-weight: 950; text-transform: uppercase; letter-spacing: 0.08em; }
+    .hero-caption strong { display: block; margin-top: 4px; font-size: 20px; }
+
+    .logic-strip {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
+      margin-top: 22px;
+    }
+    .logic-strip a {
+      min-height: 76px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,0.42);
+      color: var(--ink);
+      text-decoration: none;
+      font-weight: 850;
+    }
+    .logic-strip span { display: block; color: #a44b34; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+
+    .intro-grid {
+      display: grid;
+      grid-template-columns: 380px minmax(0, 1fr);
+      gap: 20px;
+    }
+    .story-card, .chart-card, .bird-card, .panel, .map-panel, .stat-card {
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(255, 251, 244, 0.90);
+      box-shadow: var(--soft-shadow);
+    }
+
+    .anchor-chip {
+      display: inline-flex;
+      min-height: 30px;
+      align-items: center;
+      margin: 0 8px 10px 0;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: rgba(255, 225, 212, 0.7);
+      color: #8f4d22;
+      font-size: 12px;
+      font-weight: 850;
+    }
+    .story-card, .chart-card, .panel, .stat-card { padding: 20px; }
+    .story-card { display: grid; gap: 14px; align-content: start; }
+    .step-list { display: grid; gap: 10px; }
+    .step-list div { display: grid; grid-template-columns: 34px 1fr; gap: 10px; align-items: start; }
+    .step-list span {
+      display: grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      background: #ffd7ce;
+      color: #a44b34;
+      font-weight: 950;
+    }
+    .chart-tools, .toggle-row, .layer-row, .story-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+    .chart-tools button, .toggle-row button, .layer-row button, .story-tabs button {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: var(--paper);
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 850;
+    }
+    .chart-tools button.active, .toggle-row button.active, .layer-row button.active, .story-tabs button.active {
+      background: var(--ink);
+      color: var(--paper);
+    }
+    .chart-note { margin-top: 10px; padding: 12px; border-left: 4px solid var(--orange); border-radius: 12px; background: #fff1dc; color: var(--ink); }
+
+    .species-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 16px; }
+    .bird-card { padding: 14px; overflow: hidden; transition: transform 160ms ease, box-shadow 160ms ease; }
+    .bird-card:hover, .bird-card.active { transform: translateY(-4px); box-shadow: var(--shadow); }
+    .bird-card img { width: 100%; height: 165px; object-fit: cover; border-radius: 16px; display: block; margin-bottom: 12px; }
+    .bird-card .tag { display: inline-flex; padding: 5px 9px; border-radius: 999px; background: #ffe1d4; color: #a44b34; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 950; }
+    .bird-card p { margin-top: 8px; font-size: 14px; }
+    .bird-card dl { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 0 0; }
+    .bird-card dl div { padding: 9px; border-radius: 12px; background: #fff0d8; }
+    .bird-card dt { color: var(--muted); font-size: 11px; text-transform: uppercase; font-weight: 850; }
+    .bird-card dd { margin: 2px 0 0; font-weight: 900; }
+    .wiki-link { display: inline-flex; margin-top: 12px; min-height: 34px; align-items: center; border-radius: 999px; padding: 7px 11px; background: #dff7f2; color: var(--ink); text-decoration: none; font-size: 12px; font-weight: 900; }
+
+    canvas { display: block; width: 100% !important; }
+    #topSpeciesChart { height: 310px !important; }
+    #monthlyChart { height: 330px !important; }
+    #boroughChart { height: 260px !important; }
+    #habitatRadar, #compareChart { height: 280px !important; }
+    #mixChart { height: 210px !important; }
+
+    .movement-grid { display: grid; grid-template-columns: 390px minmax(0, 1fr); gap: 18px; }
+    .subpanels { display: grid; gap: 12px; }
+    .subpanel { display: none; padding: 16px; border-radius: 18px; background: #fff2de; }
+    .subpanel.active { display: block; }
+    .mini-facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+    .mini-facts div { padding: 10px; border-radius: 14px; background: rgba(255,255,255,0.55); }
+    .mini-facts span { display:block; color: var(--muted); font-size: 11px; text-transform: uppercase; font-weight: 850; }
+    .mini-facts strong { display:block; margin-top: 4px; }
+
+    .map-module {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 390px;
+      gap: 18px;
+      min-height: 700px;
+    }
+    .map-wrap {
+      position: relative;
+      min-height: 700px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: #f4efe6;
+      box-shadow: var(--soft-shadow);
+    }
+    .map { position: absolute; inset: 0; z-index: 1; }
+    .map-panel {
+      position: absolute;
+      z-index: 500;
+      left: 18px;
+      top: 18px;
+      max-width: 370px;
+      padding: 16px;
+      backdrop-filter: blur(10px);
+    }
+    .legend {
+      position: absolute;
+      right: 18px;
+      bottom: 18px;
+      z-index: 500;
+      min-width: 190px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255, 249, 239, 0.92);
+      box-shadow: var(--soft-shadow);
+    }
+    .legend-row { display: grid; grid-template-columns: 22px 1fr; gap: 8px; align-items: center; margin-top: 7px; color: var(--muted); font-size: 13px; }
+    .swatch { height: 14px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.12); }
+    .side-panel {
+      display: grid;
+      gap: 12px;
+      align-content: start;
+      max-height: 700px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .kpi-grid div { padding: 14px; border-radius: 16px; background: #fff2de; border: 1px solid var(--line); }
+    .kpi-grid span { display:block; color: var(--muted); font-size: 11px; text-transform: uppercase; font-weight: 850; }
+    .kpi-grid strong { display:block; margin-top: 4px; font-size: 22px; }
+    .metric-row { display: grid; grid-template-columns: 82px 1fr 58px; gap: 8px; align-items: center; margin-top: 8px; font-size: 13px; color: var(--muted); }
+    .track { height: 10px; border-radius: 999px; background: rgba(31,47,42,0.10); overflow: hidden; }
+    .fill { height: 100%; border-radius: inherit; }
+    .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .profile-grid div { padding: 12px; border-radius: 14px; background: #eff8f0; border: 1px solid rgba(78,166,107,0.22); }
+    .profile-grid span { display: block; color: var(--muted); font-size: 11px; text-transform: uppercase; font-weight: 850; }
+    .profile-grid strong { display:block; margin-top: 4px; font-size: 20px; }
+    input[type="range"] { width: 100%; accent-color: var(--orange); }
+    select { width: 100%; min-height: 42px; border: 1px solid var(--line); border-radius: 14px; background: var(--paper); padding: 0 12px; font-weight: 850; color: var(--ink); }
+
+    .explorer-grid { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 18px; min-height: 620px; }
+    .explorer-grid .map-wrap { min-height: 620px; }
+    .explorer-side { max-height: 620px; overflow-y: auto; display: grid; gap: 12px; align-content: start; }
+    .compare-table dl { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0; }
+    .compare-table div { padding: 10px; border-radius: 12px; background: #fff0d8; }
+    .compare-table dt { color: var(--muted); font-size: 11px; text-transform: uppercase; font-weight: 850; }
+    .compare-table dd { margin: 2px 0 0; font-weight: 900; }
+
+    .bhp-section {
+      background:
+        linear-gradient(135deg, rgba(255, 252, 246, 0.86), rgba(255, 244, 225, 0.76)),
+        radial-gradient(circle at 82% 18%, rgba(118, 216, 210, 0.18), transparent 28%);
+    }
+    .bhp-layout {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 22px;
+      align-items: stretch;
+    }
+    .formula-card {
+      padding: 26px;
+      border-radius: 24px;
+      border: 1px solid var(--line);
+      background: #fffaf1;
+      box-shadow: var(--soft-shadow);
+    }
+    .formula {
+      margin: 22px 0;
+      padding: 24px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #fff1dc, #fff9ef);
+      font-size: clamp(25px, 3vw, 42px);
+      font-weight: 900;
+      text-align: center;
+      color: var(--ink);
+    }
+    .formula small {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 650;
+    }
+    .variable-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    .variable-grid div {
+      padding: 15px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.52);
+    }
+    .variable-grid span {
+      display: block;
+      color: #a44b34;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 950;
+    }
+    .pressure-board {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .pressure-card {
+      padding: 18px;
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      background: rgba(255, 249, 239, 0.86);
+      box-shadow: var(--soft-shadow);
+    }
+    .pressure-card.positive { border-top: 6px solid var(--leaf); }
+    .pressure-card.negative { border-top: 6px solid var(--red); }
+    .pressure-card ul { margin: 12px 0 0; padding-left: 18px; color: var(--muted); line-height: 1.7; }
+    .pressure-meter {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .pressure-row {
+      display: grid;
+      grid-template-columns: 150px 1fr 54px;
+      gap: 10px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .future-grid { display: grid; grid-template-columns: 420px minmax(0, 1fr); gap: 18px; }
+    .planning-cards { display: grid; gap: 12px; }
+    .planning-card {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(255, 249, 239, 0.9);
+      color: var(--ink);
+      box-shadow: var(--soft-shadow);
+    }
+    .planning-card.active { background: linear-gradient(135deg, #ffe0d7, #fff2b8); }
+    .planning-card span { color: #a44b34; text-transform: uppercase; letter-spacing: 0.08em; font-size: 11px; font-weight: 950; }
+    .planning-card strong { display:block; margin: 6px 0; font-size: 24px; }
+    .timeline { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .timeline div { padding: 16px; border-radius: 18px; background: #fff2de; border: 1px solid var(--line); }
+    .timeline span { display: inline-grid; place-items:center; width: 32px; height:32px; border-radius:999px; background:#ffd7ce; color:#a44b34; font-weight:950; }
+    .team-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px; }
+    .team-grid div { padding: 14px; border-radius: 16px; background: #f0fbf8; border: 1px solid var(--line); }
+
+    #cursorTrail { position: fixed; inset: 0; pointer-events: none; z-index: 9999; }
+    .trail-bird {
+      position: fixed;
+      width: 14px;
+      height: 14px;
+      pointer-events: none;
+      opacity: 0.34;
+      animation: trail 900ms ease forwards;
+    }
+    .trail-bird::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: var(--ink);
+      clip-path: polygon(0 46%, 38% 20%, 78% 0, 56% 42%, 100% 58%, 56% 62%, 28% 100%, 32% 62%);
+    }
+    @keyframes trail { to { opacity: 0; transform: translateY(-14px) scale(0.72); } }
+
+    .leaflet-container { background: #f4efe6; font: inherit; }
+    .leaflet-popup-content-wrapper { border-radius: 16px; }
+
+    @media (max-width: 980px) {
+      .site-nav { grid-template-columns: 1fr; border-radius: 24px; }
+      .nav-links { justify-content: flex-start; overflow-x: auto; flex-wrap: nowrap; }
+      .home, .section-head, .intro-grid, .movement-grid, .map-module, .explorer-grid, .future-grid { grid-template-columns: 1fr; }
+      .species-cards, .timeline, .team-grid, .logic-strip { grid-template-columns: 1fr; }
+      .section { padding: 24px; }
+      .hero-visual { min-height: auto; }
+      .map-wrap, .map-module, .explorer-grid .map-wrap { min-height: 600px; }
+      .side-panel, .explorer-side { max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <div id="cursorTrail" aria-hidden="true"></div>
+
+  <nav class="site-nav">
+    <a class="brand" href="#home">
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <path d="M12 38c10-13 21-20 39-24-7 8-12 16-14 25 4 4 9 7 15 9-12 1-22-3-30-10-4 1-7 1-10 0z" />
+        <path d="M31 27c-3-7-8-11-16-13 4 8 8 13 15 16" />
+        <path d="M43 20l8-8" />
+        <circle cx="38" cy="23" r="2.2" />
+      </svg>
+      <span>London Flyways</span>
+    </a>
+    <div class="nav-links">
+      <details open>
+        <summary>Introduction</summary>
+        <div class="dropdown">
+          <a href="#home">Home</a>
+          <a href="#why-birds">Why Birds in London?</a>
+          <a href="#species-selection">Species Selection</a>
+        </div>
+      </details>
+      <details>
+        <summary>Movement</summary>
+        <div class="dropdown">
+          <a href="#seasonal-rhythms">Seasonal Rhythms</a>
+          <a href="#migration-peaks">Migration Peaks</a>
+          <a href="#spatial-hotspots">Spatial Hotspots</a>
+        </div>
+      </details>
+      <details>
+        <summary>Habitat</summary>
+        <div class="dropdown">
+          <a href="#urban-habitat-lens">Urban Habitat Lens</a>
+          <a href="#hotspot-comparison">Hotspot Comparison</a>
+          <a href="#environmental-profiles">Environmental Profiles</a>
+        </div>
+      </details>
+      <details>
+        <summary>Explorer</summary>
+        <div class="dropdown">
+          <a href="#bhp-index">BHP Index</a>
+          <a href="#hotspot-explorer">Hotspot Explorer</a>
+          <a href="#attention-zones">Attention Zones</a>
+          <a href="#compare-areas">Compare Areas</a>
+        </div>
+      </details>
+      <details>
+        <summary>Future</summary>
+        <div class="dropdown">
+          <a href="#planning-flyway">Planning the Flyway</a>
+          <a href="#limitations">Limitations</a>
+          <a href="#team">Team</a>
+        </div>
+      </details>
+    </div>
+    <button class="nav-next" type="button" id="nextBtn">Next</button>
+  </nav>
+
+  <main>
+    <section id="home" class="section home">
+      <div class="hero-copy">
+        <p class="eyebrow" id="home-anchor">Urban Data Visualisation | London 2021-2025</p>
+        <h1>London Flyways</h1>
+        <h3>How do migratory birds move through, gather in, and respond to the urban environment?</h3>
+        <p>London is a seasonal pathway where migratory birds reveal hidden ecological patterns across parks, waterways and built fabric.</p>
+        <div class="hero-actions">
+          <a class="primary" href="#introduction">Start the story</a>
+          <a class="secondary" href="#habitat">Jump to the habitat answer</a>
+        </div>
+        <div class="logic-strip">
+          <a href="#introduction"><span>01</span>Introduction</a>
+          <a href="#movement"><span>02</span>Movement</a>
+          <a href="#habitat"><span>03</span>Habitat</a>
+          <a href="#bhp-index"><span>04</span>BHP Index</a>
+          <a href="#explorer"><span>05</span>Explorer</a>
+          <a href="#future"><span>06</span>Future</a>
+        </div>
+      </div>
+      <aside class="hero-visual">
+        <img src="images/hero-flyways.png" alt="Illustrated London flyway scene with birds and urban habitats" />
+        <div class="hero-caption">
+          <div><span>Question</span><strong>Where and when?</strong></div>
+          <div><span>Answer lens</span><strong>Birds + habitat</strong></div>
+          <div><span>Data period</span><strong>2021-2025</strong></div>
+          <div><span>Spatial unit</span><strong>MSOA</strong></div>
+        </div>
+      </aside>
+    </section>
+
+    <section id="introduction" class="section">
+      <span class="anchor-chip" id="why-birds">Why Birds in London?</span>
+      <span class="anchor-chip" id="species-selection">Species Selection</span>
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">01 Introduction</p>
+          <h2>Why birds in London?</h2>
+        </div>
+        <p>Using observation records, this project identifies frequently recorded migratory birds and then asks how their seasonal and spatial patterns relate to urban conditions.</p>
+      </div>
+
+      <div class="intro-grid">
+        <aside class="story-card">
+          <h3>Species selection logic</h3>
+          <p>The selected three species stand out not only for strong presence, but because they show different ways of using urban environments.</p>
+          <div class="step-list">
+            <div><span>1</span><p>Start with the top recorded migratory bird species.</p></div>
+            <div><span>2</span><p>Select birds with clear seasonal rhythms.</p></div>
+            <div><span>3</span><p>Compare different relationships with airspace, water, green edges and buildings.</p></div>
+          </div>
+          <div class="chart-tools" id="topMode">
+            <button class="active" data-mode="top">Top 10</button>
+            <button data-mode="selected">Selected three</button>
+            <button data-mode="logic">Urban-use logic</button>
+            <button id="replayTop" type="button">Replay</button>
+          </div>
+          <p class="chart-note" id="topNote">The top-ten chart justifies the species choice before the story narrows to three birds.</p>
+        </aside>
+
+        <div>
+          <div class="chart-card">
+            <canvas id="topSpeciesChart"></canvas>
+          </div>
+          <div class="species-cards">
+            <article class="bird-card active" data-bird="Common Swift">
+              <img src="images/swift.jpg" alt="Common Swift" />
+              <span class="tag">Common Swift</span>
+              <h3>Airspace specialist</h3>
+              <p>A short, intense summer visitor. It makes urban airspace and nesting structures visible in the data.</p>
+              <dl><div><dt>Urban clue</dt><dd>Roofs + sky</dd></div><div><dt>Pattern</dt><dd>Sharp peak</dd></div></dl>
+              <a class="wiki-link" href="https://en.wikipedia.org/wiki/Common_swift" target="_blank" rel="noreferrer">Wikipedia profile</a>
+            </article>
+            <article class="bird-card" data-bird="Barn Swallow">
+              <img src="images/swallow.jpg" alt="Barn Swallow" />
+              <span class="tag">Barn Swallow</span>
+              <h3>Open-edge traveller</h3>
+              <p>A flexible migrant linked to open areas and water edges, useful for reading corridors.</p>
+              <dl><div><dt>Urban clue</dt><dd>Open edge</dd></div><div><dt>Pattern</dt><dd>Longer season</dd></div></dl>
+              <a class="wiki-link" href="https://en.wikipedia.org/wiki/Barn_swallow" target="_blank" rel="noreferrer">Wikipedia profile</a>
+            </article>
+            <article class="bird-card" data-bird="House Martin">
+              <img src="images/house-martin.jpg" alt="House Martin" />
+              <span class="tag">House Martin</span>
+              <h3>Built-habitat bridge</h3>
+              <p>A settlement-adjacent migrant that connects eaves, open space and feeding habitat.</p>
+              <dl><div><dt>Urban clue</dt><dd>Eaves + wetland</dd></div><div><dt>Pattern</dt><dd>Smoother curve</dd></div></dl>
+              <a class="wiki-link" href="https://en.wikipedia.org/wiki/Common_house_martin" target="_blank" rel="noreferrer">Wikipedia profile</a>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="movement" class="section">
+      <span class="anchor-chip" id="seasonal-rhythms">Seasonal Rhythms</span>
+      <span class="anchor-chip" id="migration-peaks">Migration Peaks</span>
+      <span class="anchor-chip" id="spatial-hotspots">Spatial Hotspots</span>
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">02 Movement</p>
+          <h2>Seasonal rhythms, migration peaks, spatial hotspots.</h2>
+        </div>
+        <p>Migratory birds do not appear randomly throughout the year. Their presence follows seasonal rhythms, so the map should be read through species and season controls.</p>
+      </div>
+
+      <div class="movement-grid">
+        <aside class="story-card">
+          <div class="story-tabs" id="movementTabs">
+            <button class="active" data-tab="rhythm">Seasonal Rhythms</button>
+            <button data-tab="peaks">Migration Peaks</button>
+            <button data-tab="hotspots">Spatial Hotspots</button>
+          </div>
+          <div class="subpanels">
+            <div class="subpanel active" data-panel="rhythm">
+              <h3>Season first.</h3>
+              <p>Monthly records explain why the map cannot be a single cumulative layer. Readers need to choose a time lens before reading space.</p>
+              <div class="mini-facts"><div><span>Unit</span><strong>Month</strong></div><div><span>Map</span><strong>MSOA</strong></div><div><span>Story</span><strong>Where + when</strong></div></div>
+            </div>
+            <div class="subpanel" data-panel="peaks">
+              <h3>Peaks differ by species.</h3>
+              <p>Swift is sharp and compressed, Swallow is longer and more flexible, and House Martin has a smoother late-spring to summer presence.</p>
+            </div>
+            <div class="subpanel" data-panel="hotspots">
+              <h3>Then map the seasonal footprint.</h3>
+              <p>Use the interactive map below to see how hotspot geography changes with species and season.</p>
+            </div>
+          </div>
+          <div class="chart-tools" id="monthlyFocus">
+            <button class="active" data-species="all">All</button>
+            <button data-species="Common Swift">Swift</button>
+            <button data-species="Barn Swallow">Swallow</button>
+            <button data-species="House Martin">Martin</button>
+            <button id="playSeasons" type="button">Play season pulse</button>
+          </div>
+          <p class="chart-note" id="monthlyNote">All three selected migrants peak between late spring and summer, but their peak shapes differ.</p>
+        </aside>
+        <div class="chart-card">
+          <canvas id="monthlyChart"></canvas>
+        </div>
+      </div>
+
+      <div class="map-module" style="margin-top:18px;">
+        <div class="map-wrap">
+          <div id="movementMap" class="map"></div>
+          <div class="map-panel">
+            <p class="eyebrow">Spatial Hotspots</p>
+            <h3>Where and when do birds appear?</h3>
+            <p>Toggle species and season. Hover an MSOA to read local records.</p>
+            <h4>Species</h4>
+            <div class="toggle-row" id="speciesToggle"></div>
+            <h4 style="margin-top:12px;">Season</h4>
+            <div class="toggle-row" id="seasonToggle"></div>
+            <div class="toggle-row" style="margin-top:12px;">
+              <button id="movementReset">Reset view</button>
+              <button id="movementRandom">Surprise hotspot</button>
+            </div>
+          </div>
+          <div class="legend" id="movementLegend"></div>
+        </div>
+        <aside class="side-panel">
+          <div class="panel">
+            <p class="eyebrow">Linked statistic</p>
+            <h3 id="boroughTitle">Top boroughs</h3>
+            <p id="movementInfo">Hover or click an MSOA to inspect the selected bird count.</p>
+            <canvas id="boroughChart"></canvas>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="habitat" class="section">
+      <span class="anchor-chip" id="urban-habitat-lens">Urban Habitat Lens</span>
+      <span class="anchor-chip" id="hotspot-comparison">Hotspot Comparison</span>
+      <span class="anchor-chip" id="environmental-profiles">Environmental Profiles</span>
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">03 Habitat</p>
+          <h2>What kind of urban environment do hotspots share?</h2>
+        </div>
+        <p>Bird hotspots are not random. This module compares hotspot and non-hotspot areas through green cover, water cover and building centroid density.</p>
+      </div>
+
+      <div class="map-module">
+        <div class="map-wrap">
+          <div id="habitatMap" class="map"></div>
+          <div class="map-panel">
+            <p class="eyebrow">Urban Habitat Lens</p>
+            <h3 id="habitatModeTitle">Recorded bird activity</h3>
+            <p>Switch layers, change the hotspot threshold, and click an MSOA for a habitat profile.</p>
+            <div class="layer-row" id="habitatLayers">
+              <button class="active" data-layer="bird_count">Bird records</button>
+              <button data-layer="green_pct">Green</button>
+              <button data-layer="water_pct">Water</button>
+              <button data-layer="building_density">Built density</button>
+              <button data-layer="habitat_setting">Setting</button>
+            </div>
+            <label style="display:block;margin-top:12px;font-weight:850;">Hotspot threshold: <span id="thresholdLabel">300+</span></label>
+            <input id="thresholdSlider" type="range" min="50" max="800" value="300" step="50" />
+          </div>
+          <div class="legend" id="habitatLegend"></div>
+        </div>
+        <aside class="side-panel">
+          <div class="kpi-grid">
+            <div><span>Total records</span><strong id="kpiRecords">--</strong></div>
+            <div><span>Hotspots</span><strong id="kpiHotspots">--</strong></div>
+            <div><span>Top borough</span><strong id="kpiBorough">--</strong></div>
+            <div><span>Shared signal</span><strong id="kpiSignal">--</strong></div>
+          </div>
+          <div class="panel">
+            <p class="eyebrow">Direct answer</p>
+            <h3 id="answerTitle">Hotspots lean toward park-edge and outer-London settings.</h3>
+            <p id="answerText">At the current threshold, the shared habitat profile updates from the selected hotspots.</p>
+            <div id="signatureBars"></div>
+          </div>
+          <div class="panel">
+            <h3 id="selectedTitle">Click an MSOA</h3>
+            <p id="selectedText">Local environmental profile will appear here.</p>
+            <div class="profile-grid">
+              <div><span>Records</span><strong id="selRecords">--</strong></div>
+              <div><span>Green</span><strong id="selGreen">--</strong></div>
+              <div><span>Water</span><strong id="selWater">--</strong></div>
+              <div><span>Built/km2</span><strong id="selBuilt">--</strong></div>
+            </div>
+            <canvas id="habitatRadar"></canvas>
+          </div>
+          <div class="panel">
+            <h3>Hotspot environment mix</h3>
+            <canvas id="mixChart"></canvas>
+          </div>
+          <div class="panel">
+            <h4>Evidence note</h4>
+            <p>Green and water are area coverage from GeoJSON polygons. Buildings are centroid density, not footprint cover.</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="bhp-index" class="section bhp-section">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">04 Composite Habitat Evaluation Framework</p>
+          <h2>From hotspots to Bird Habitat Potential.</h2>
+        </div>
+        <p>Before the final explorer map, the project introduces a literature-informed composite index. It separates positive ecological support from negative urban pressure, so the attention zones are interpretable rather than decorative.</p>
+      </div>
+
+      <div class="bhp-layout">
+        <article class="formula-card">
+          <p class="eyebrow">Bird Habitat Potential</p>
+          <h3>Composite index used to classify attention zones</h3>
+          <div class="formula">
+            BHP = (w1Hi + w2Ci) - (w3Di + w4Ei)
+            <small>Positive ecological support minus negative urban pressure</small>
+          </div>
+          <div class="variable-grid">
+            <div><span>Hi</span><strong>Habitat Quality</strong><p>Green space and water-related habitat support.</p></div>
+            <div><span>Ci</span><strong>Connectivity</strong><p>Potential corridor value and ecological continuity.</p></div>
+            <div><span>Di</span><strong>Human Disturbance</strong><p>Direct anthropogenic interaction such as roads or building density.</p></div>
+            <div><span>Ei</span><strong>Environmental Pressure</strong><p>Background ecological burdens such as heat, noise, light or pollution exposure.</p></div>
+          </div>
+        </article>
+
+        <aside class="pressure-board">
+          <div class="pressure-card positive">
+            <h3>Positive ecological support</h3>
+            <p>Habitat quality and connectivity increase the potential of an area to support migratory bird activity.</p>
+            <ul>
+              <li>Green cover and open space</li>
+              <li>Water proximity and blue corridors</li>
+              <li>Landscape continuity between hotspots</li>
+            </ul>
+          </div>
+          <div class="pressure-card negative">
+            <h3>Negative ecological pressure</h3>
+            <p>Disturbance and Environmental Pressure reduce suitability. This wording is more precise than the vague term stress.</p>
+            <ul>
+              <li>Human Disturbance: direct urban interaction</li>
+              <li>Environmental Pressure: ambient environmental burden</li>
+              <li>Current proxy: building centroid density plus urban intensity</li>
+            </ul>
+          </div>
+          <div class="pressure-card" style="grid-column:1/-1;">
+            <h3>Why not call it Stress?</h3>
+            <p>Environmental Pressure refers to background ecological burdens such as urban heat, noise exposure, light pollution or surrounding environmental stressors that may reduce habitat suitability.</p>
+            <div class="pressure-meter">
+              <div class="pressure-row"><span>Habitat Quality</span><div class="track"><div class="fill" style="width:78%;background:var(--leaf)"></div></div><strong>+</strong></div>
+              <div class="pressure-row"><span>Connectivity</span><div class="track"><div class="fill" style="width:64%;background:var(--water)"></div></div><strong>+</strong></div>
+              <div class="pressure-row"><span>Human Disturbance</span><div class="track"><div class="fill" style="width:52%;background:var(--built)"></div></div><strong>-</strong></div>
+              <div class="pressure-row"><span>Environmental Pressure</span><div class="track"><div class="fill" style="width:44%;background:var(--red)"></div></div><strong>-</strong></div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="explorer" class="section">
+      <span class="anchor-chip" id="hotspot-explorer">Hotspot Explorer</span>
+      <span class="anchor-chip" id="attention-zones">Attention Zones</span>
+      <span class="anchor-chip" id="compare-areas">Compare Areas</span>
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">04 Explorer</p>
+          <h2>Hotspot explorer, attention zones, compare areas.</h2>
+        </div>
+        <p>Not all areas play the same ecological role. The final interactive map interprets MSOAs as stable habitat cores, urban pressure zones or potential corridors.</p>
+      </div>
+
+      <div class="explorer-grid">
+        <div class="map-wrap">
+          <div id="explorerMap" class="map"></div>
+          <div class="map-panel">
+            <p class="eyebrow">Explore the Flyway</p>
+            <h3>Which areas deserve ecological attention?</h3>
+            <p>Click two MSOAs to compare their ecological profile.</p>
+            <div class="toggle-row" style="margin-top:12px;">
+              <button id="clearCompare">Clear comparison</button>
+              <button id="coreFocus">Find habitat core</button>
+            </div>
+          </div>
+          <div class="legend" id="explorerLegend"></div>
+        </div>
+        <aside class="explorer-side">
+          <div class="panel">
+            <p class="eyebrow">Local ecological card</p>
+            <h3 id="attentionTitle">Click an area</h3>
+            <div id="attentionCard" class="compare-table">Bird count, dominant species, habitat score and attention level will appear here.</div>
+          </div>
+          <div class="panel">
+            <h3>Compare selected areas</h3>
+            <div id="compareTable" class="compare-table">Choose two MSOAs on the map.</div>
+            <canvas id="compareChart"></canvas>
+          </div>
+          <div class="panel">
+            <h3>Interpretation</h3>
+            <p>Stable ecological cores show repeated records with measurable habitat. Urban pressure zones show bird records inside dense built contexts. Potential corridors suggest places where improvements could enhance connectivity.</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="future" class="section">
+      <span class="anchor-chip" id="planning-flyway">Planning the Flyway</span>
+      <span class="anchor-chip" id="limitations">Limitations</span>
+      <span class="anchor-chip" id="team">Team</span>
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">05 Future</p>
+          <h2>Towards bird-friendly cities.</h2>
+        </div>
+        <p>Migratory birds are more than seasonal visitors. They are indicators of urban environmental quality and ecological resilience.</p>
+      </div>
+
+      <div class="future-grid">
+        <aside class="story-card">
+          <h3>Planning the flyway</h3>
+          <p>Protecting bird habitats is not only about conserving species, but about maintaining the ecological resilience of the city itself.</p>
+          <div class="planning-cards">
+            <button class="planning-card active" data-plan="protect"><span>Protect</span><strong>Stable habitat cores</strong><p>Prioritise repeated hotspots with visible green or water signals.</p></button>
+            <button class="planning-card" data-plan="connect"><span>Connect</span><strong>Potential corridors</strong><p>Use green and blue links to connect outer-London habitat edges.</p></button>
+            <button class="planning-card" data-plan="buffer"><span>Buffer</span><strong>Urban pressure zones</strong><p>Monitor hotspots where records meet high building density.</p></button>
+            <button class="planning-card" data-plan="monitor"><span>Monitor</span><strong>Evidence limits</strong><p>Citizen-science records show observation intensity, not direct abundance.</p></button>
+          </div>
+        </aside>
+        <div class="panel">
+          <p class="eyebrow">Selected strategy</p>
+          <h3 id="planTitle">Protect stable habitat cores</h3>
+          <p id="planText">Start from repeated hotspots that overlap measurable habitat. These are the strongest candidates for conservation attention.</p>
+          <div class="timeline" style="margin-top:18px;">
+            <div><span>1</span><h4>Find</h4><p>Identify repeated seasonal hotspots.</p></div>
+            <div><span>2</span><h4>Overlay</h4><p>Compare green, water and building density.</p></div>
+            <div><span>3</span><h4>Classify</h4><p>Separate cores, corridors and pressure zones.</p></div>
+            <div><span>4</span><h4>Plan</h4><p>Use evidence to guide bird-friendly urban design.</p></div>
+          </div>
+          <div class="team-grid">
+            <div><h4>Limitations</h4><p>Records are influenced by observer behaviour and accessibility.</p></div>
+            <div><h4>Data caution</h4><p>Building values are centroid density, not land-cover area.</p></div>
+            <div><h4>Team use</h4><p>Each module can be owned separately while keeping one coherent website.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const C = {
+      red: "#ff6568", orange: "#ff9a5c", mint: "#8bd4ae", aqua: "#76d8d2",
+      sky: "#6bc5ee", leaf: "#4ea66b", water: "#3fa7bd", built: "#c47b55",
+      gold: "#e7ad3d", ink: "#1f2f2a", beige: "#f7ead6"
+    };
+    const species = ["Common Swift", "Barn Swallow", "House Martin"];
+    const seasons = ["Spring", "Summer", "Autumn"];
+    let siteData, msoaData, movementLayer, habitatLayer, explorerLayer;
+    let movementMap, habitatMap, explorerMap;
+    let selectedSpecies = "Common Swift";
+    let selectedSeason = "Summer";
+    let habitatLayerMode = "bird_count";
+    let threshold = 300;
+    let compareSelection = [];
+    let topSpeciesChart, monthlyChart, boroughChart, habitatRadar, mixChart, compareChart;
+
+    Chart.defaults.font.family = "Inter, Segoe UI, Arial, sans-serif";
+    Chart.defaults.color = C.ink;
+    Chart.defaults.plugins.tooltip.backgroundColor = "rgba(31,47,42,0.92)";
+    Chart.defaults.plugins.tooltip.cornerRadius = 10;
+    Chart.defaults.plugins.tooltip.padding = 10;
+
+    const countKey = (sp, season) => `cnt_${sp.toLowerCase().replaceAll(" ", "_")}_${season.toLowerCase()}`;
+    const fmt = n => Number(n || 0).toLocaleString("en-GB");
+    const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+
+    function getColor(value, breaks) {
+      return breaks.find(b => value >= b[0] && value <= b[1])?.[2] || breaks[0][2];
+    }
+
+    const birdBreaks = [[0,0,"#fff9ef"],[1,5,"#e9f5c7"],[6,20,"#aee0aa"],[21,60,"#76d8d2"],[61,140,"#f1bf5b"],[141,Infinity,"#ff7560"]];
+    const greenBreaks = [[0,2,"#fff9ef"],[2,6,"#e2f4c3"],[6,12,"#b8e09b"],[12,25,"#70bd78"],[25,Infinity,"#328950"]];
+    const waterBreaks = [[0,0.05,"#fff9ef"],[0.05,0.5,"#d8f5f5"],[0.5,2,"#9de2df"],[2,8,"#45b8c9"],[8,Infinity,"#217f99"]];
+    const builtBreaks = [[0,25,"#fff9ef"],[25,45,"#f4dcc0"],[45,65,"#e3b07f"],[65,90,"#c47b55"],[90,Infinity,"#9f533c"]];
+    const attentionColors = {
+      "Stable Habitat Core": C.leaf,
+      "Potential Corridor": C.water,
+      "Urban Pressure Area": C.red,
+      "Lower Priority Matrix": "#d9cfae"
+    };
+    const settingColors = {
+      "Green-rich": C.leaf,
+      "Water-linked": C.water,
+      "Built-up": C.built,
+      "Mixed": C.gold
+    };
+
+    function makeMap(id) {
+      const map = L.map(id, { zoomControl: false, preferCanvas: false }).setView([51.5072, -0.1276], 10);
+      L.control.zoom({ position: "bottomright" }).addTo(map);
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+        attribution: "&copy; OpenStreetMap &copy; CARTO",
+        opacity: 0.70,
+        subdomains: "abcd",
+        maxZoom: 19
+      }).addTo(map);
+      return map;
+    }
+
+    function movementStyle(feature) {
+      const v = Number(feature.properties[countKey(selectedSpecies, selectedSeason)] || 0);
+      return {
+        fillColor: getColor(v, birdBreaks),
+        fillOpacity: v ? 0.84 : 0.28,
+        color: v ? "rgba(31,47,42,0.46)" : "rgba(31,47,42,0.16)",
+        weight: v ? 0.75 : 0.35
+      };
+    }
+
+    function habitatStyle(feature) {
+      const p = feature.properties;
+      if (habitatLayerMode === "habitat_setting") {
+        return { fillColor: settingColors[p.habitat_setting] || C.gold, fillOpacity: 0.78, color: "rgba(31,47,42,0.42)", weight: 0.65 };
+      }
+      let breaks = birdBreaks;
+      if (habitatLayerMode === "green_pct") breaks = greenBreaks;
+      if (habitatLayerMode === "water_pct") breaks = waterBreaks;
+      if (habitatLayerMode === "building_density") breaks = builtBreaks;
+      const v = Number(p[habitatLayerMode] || 0);
+      const isHot = Number(p.bird_count || 0) >= threshold;
+      return {
+        fillColor: getColor(v, breaks),
+        fillOpacity: isHot ? 0.90 : 0.46,
+        color: isHot ? "rgba(31,47,42,0.64)" : "rgba(31,47,42,0.18)",
+        weight: isHot ? 1.05 : 0.45
+      };
+    }
+
+    function explorerStyle(feature) {
+      return {
+        fillColor: attentionColors[feature.properties.attention_zone] || "#d9cfae",
+        fillOpacity: 0.82,
+        color: "rgba(31,47,42,0.48)",
+        weight: 0.65
+      };
+    }
+
+    function renderLegend(id, rows) {
+      document.getElementById(id).innerHTML = `<h4>Legend</h4>` + rows.map(r => `<div class="legend-row"><span class="swatch" style="background:${r.color}"></span><span>${r.label}</span></div>`).join("");
+    }
+
+    function initCharts() {
+      topSpeciesChart = new Chart(document.getElementById("topSpeciesChart"), {
+        type: "bar",
+        data: { labels: [], datasets: [{ data: [], backgroundColor: [], borderRadius: 9 }] },
+        options: { indexAxis: "y", maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { color: "rgba(31,47,42,0.10)" } }, y: { grid: { display: false } } } }
+      });
+      updateTopChart("top");
+
+      monthlyChart = new Chart(document.getElementById("monthlyChart"), {
+        type: "line",
+        data: {
+          labels: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+          datasets: species.map((sp, i) => ({
+            label: sp,
+            data: Array.from({length: 12}, (_, m) => Number(siteData.monthly.find(d => d.common_name === sp && Number(d.month) === m + 1)?.record_count || 0)),
+            borderColor: [C.sky, C.red, C.leaf][i],
+            backgroundColor: [C.sky, C.red, C.leaf][i],
+            tension: 0.36,
+            pointRadius: 3,
+            borderWidth: 3
+          }))
+        },
+        options: { maintainAspectRatio: false, plugins: { legend: { position: "bottom" } }, scales: { x: { grid: { display: false } }, y: { grid: { color: "rgba(31,47,42,0.10)" } } } }
+      });
+
+      boroughChart = new Chart(document.getElementById("boroughChart"), {
+        type: "bar",
+        data: { labels: [], datasets: [{ data: [], backgroundColor: C.sky, borderRadius: 8 }] },
+        options: { indexAxis: "y", maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { color: "rgba(31,47,42,0.10)" } }, y: { grid: { display: false }, ticks: { font: { size: 11 } } } } }
+      });
+
+      habitatRadar = new Chart(document.getElementById("habitatRadar"), {
+        type: "radar",
+        data: { labels: ["Green", "Water", "Built", "Bird records"], datasets: [{ label: "Selected MSOA", data: [0,0,0,0], borderColor: C.red, backgroundColor: "rgba(255,101,104,0.18)" }] },
+        options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { r: { min: 0, max: 100, ticks: { display: false }, grid: { color: "rgba(31,47,42,0.12)" } } } }
+      });
+
+      mixChart = new Chart(document.getElementById("mixChart"), {
+        type: "doughnut",
+        data: { labels: [], datasets: [{ data: [], backgroundColor: [], borderColor: "#fff9ef", borderWidth: 3 }] },
+        options: { maintainAspectRatio: false, cutout: "58%", plugins: { legend: { position: "bottom", labels: { boxWidth: 10 } } } }
+      });
+
+      compareChart = new Chart(document.getElementById("compareChart"), {
+        type: "radar",
+        data: { labels: ["Green", "Water", "Built", "Birds"], datasets: [] },
+        options: { maintainAspectRatio: false, scales: { r: { min: 0, max: 100, ticks: { display: false } } }, plugins: { legend: { position: "bottom" } } }
+      });
+      updateBoroughChart();
+      updateHabitatStats();
+    }
+
+    function updateTopChart(mode) {
+      const rows = mode === "selected" ? siteData.top10_species.filter(d => species.includes(d["Common name"])) : siteData.top10_species;
+      topSpeciesChart.data.labels = rows.map(d => d["Common name"]);
+      topSpeciesChart.data.datasets[0].data = rows.map(d => d.record_count);
+      topSpeciesChart.data.datasets[0].backgroundColor = rows.map(d => {
+        if (mode === "logic") {
+          if (d["Common name"] === "Common Swift") return C.sky;
+          if (d["Common name"] === "Barn Swallow") return C.red;
+          if (d["Common name"] === "House Martin") return C.leaf;
+        }
+        return species.includes(d["Common name"]) ? C.red : "#d9cfae";
+      });
+      const notes = {
+        top: "The top-ten chart justifies the species choice before the story narrows to three birds.",
+        selected: "The selected trio are frequent enough to support analysis, but specific enough to keep the story focused.",
+        logic: "The three colours encode different urban-use logics: airspace, open-edge corridors and building-habitat bridges."
+      };
+      document.getElementById("topNote").textContent = notes[mode];
+      topSpeciesChart.update();
+    }
+
+    function updateMonthlyFocus(sp) {
+      monthlyChart.data.datasets.forEach(ds => { ds.hidden = sp !== "all" && ds.label !== sp; ds.borderWidth = sp === "all" || ds.label === sp ? 3 : 1; });
+      const notes = {
+        all: "All three selected migrants peak between late spring and summer, but their peak shapes differ.",
+        "Common Swift": "Swift shows a concentrated May-August pulse, indicating a short and intense summer window.",
+        "Barn Swallow": "Swallow appears earlier and remains longer, suggesting a more flexible migration rhythm.",
+        "House Martin": "House Martin shows a smoother seasonal pattern from late spring through summer."
+      };
+      document.getElementById("monthlyNote").textContent = notes[sp] || notes.all;
+      monthlyChart.update();
+    }
+
+    function updateBoroughChart() {
+      const rows = (siteData.top_boroughs[selectedSpecies]?.[selectedSeason] || []).slice(0, 5);
+      document.getElementById("boroughTitle").textContent = `${selectedSpecies} in ${selectedSeason}`;
+      boroughChart.data.labels = rows.map(d => d.lad22nm);
+      boroughChart.data.datasets[0].data = rows.map(d => d.count);
+      boroughChart.update();
+    }
+
+    function initMovementMap() {
+      movementMap = makeMap("movementMap");
+      movementLayer = L.geoJSON(msoaData, {
+        style: movementStyle,
+        onEachFeature: (feature, layer) => {
+          layer.on({
+            mouseover: () => {
+              layer.setStyle({ weight: 2, color: C.ink });
+              const v = Number(feature.properties[countKey(selectedSpecies, selectedSeason)] || 0);
+              document.getElementById("movementInfo").innerHTML = `<strong>${feature.properties.msoa21nm}</strong><br>${selectedSpecies}, ${selectedSeason}: ${fmt(v)} records<br>${feature.properties.lad22nm}`;
+            },
+            mouseout: () => movementLayer.resetStyle(layer),
+            click: () => movementMap.fitBounds(layer.getBounds(), { padding: [80, 80], maxZoom: 12 })
+          });
+        }
+      }).addTo(movementMap);
+      movementMap.fitBounds(movementLayer.getBounds(), { padding: [24, 24] });
+      renderLegend("movementLegend", birdBreaks.map(b => ({ label: b[1] === Infinity ? `${b[0]}+` : `${b[0]}-${b[1]}`, color: b[2] })));
+
+      drawButtons("speciesToggle", species, selectedSpecies, value => { selectedSpecies = value; movementLayer.setStyle(movementStyle); updateBoroughChart(); });
+      drawButtons("seasonToggle", seasons, selectedSeason, value => { selectedSeason = value; movementLayer.setStyle(movementStyle); updateBoroughChart(); });
+      document.getElementById("movementReset").addEventListener("click", () => movementMap.fitBounds(movementLayer.getBounds(), { padding: [24,24] }));
+      document.getElementById("movementRandom").addEventListener("click", () => focusRandomHotspot(movementMap, movementLayer, countKey(selectedSpecies, selectedSeason)));
+    }
+
+    function drawButtons(id, values, active, callback) {
+      const box = document.getElementById(id);
+      box.innerHTML = "";
+      values.forEach(v => {
+        const b = document.createElement("button");
+        b.textContent = v;
+        b.className = v === active ? "active" : "";
+        b.addEventListener("click", () => {
+          callback(v);
+          drawButtons(id, values, v, callback);
+        });
+        box.appendChild(b);
+      });
+    }
+
+    function focusRandomHotspot(map, layer, key = "bird_count") {
+      const ranked = [...msoaData.features].filter(f => Number(f.properties[key] || 0) > 0).sort((a,b) => Number(b.properties[key] || 0) - Number(a.properties[key] || 0)).slice(0, 40);
+      const f = ranked[Math.floor(Math.random() * ranked.length)];
+      const target = layer.getLayers().find(l => l.feature.properties.msoa21cd === f?.properties.msoa21cd);
+      if (target) {
+        map.fitBounds(target.getBounds(), { padding: [80,80], maxZoom: 12 });
+        target.fire("mouseover");
+      }
+    }
+
+    function initHabitatMap() {
+      habitatMap = makeMap("habitatMap");
+      habitatLayer = L.geoJSON(msoaData, {
+        style: habitatStyle,
+        onEachFeature: (feature, layer) => {
+          layer.on({
+            mouseover: () => layer.setStyle({ weight: 2, color: C.ink }),
+            mouseout: () => habitatLayer.resetStyle(layer),
+            click: () => updateSelectedArea(feature)
+          });
+        }
+      }).addTo(habitatMap);
+      habitatMap.fitBounds(habitatLayer.getBounds(), { padding: [24,24] });
+      updateHabitatLegend();
+    }
+
+    function updateHabitatLegend() {
+      const legends = {
+        bird_count: birdBreaks,
+        green_pct: greenBreaks,
+        water_pct: waterBreaks,
+        building_density: builtBreaks
+      };
+      if (habitatLayerMode === "habitat_setting") {
+        renderLegend("habitatLegend", Object.entries(settingColors).map(([label, color]) => ({ label, color })));
+      } else {
+        renderLegend("habitatLegend", legends[habitatLayerMode].map(b => ({ label: b[1] === Infinity ? `${b[0]}+` : `${b[0]}-${b[1]}`, color: b[2] })));
+      }
+    }
+
+    function visibleHotspots() {
+      return msoaData.features.filter(f => Number(f.properties.bird_count || 0) >= threshold);
+    }
+
+    function updateHabitatStats() {
+      const hotspots = visibleHotspots();
+      const total = msoaData.features.reduce((s,f) => s + Number(f.properties.bird_count || 0), 0);
+      const avg = hotspots.reduce((a,f) => {
+        a.green += Number(f.properties.green_pct || 0);
+        a.water += Number(f.properties.water_pct || 0);
+        a.built += Number(f.properties.building_density || 0);
+        return a;
+      }, {green:0, water:0, built:0});
+      if (hotspots.length) Object.keys(avg).forEach(k => avg[k] /= hotspots.length);
+      const boroughCount = {};
+      hotspots.forEach(f => boroughCount[f.properties.lad22nm] = (boroughCount[f.properties.lad22nm] || 0) + 1);
+      const topBorough = Object.entries(boroughCount).sort((a,b) => b[1]-a[1])[0]?.[0] || "--";
+      const signal = avg.green >= 5 ? "Green-edge" : avg.water >= 1 ? "Blue corridor" : "Built pressure";
+      document.getElementById("kpiRecords").textContent = fmt(total);
+      document.getElementById("kpiHotspots").textContent = fmt(hotspots.length);
+      document.getElementById("kpiBorough").textContent = topBorough;
+      document.getElementById("kpiSignal").textContent = signal;
+      document.getElementById("answerTitle").textContent = signal === "Green-edge" ? "Hotspots lean toward green-edge and outer-London settings." : signal === "Blue corridor" ? "Hotspots show a measurable blue-corridor pull." : "Hotspots also appear inside built-pressure contexts.";
+      document.getElementById("answerText").textContent = `At the current threshold, hotspot MSOAs average ${avg.green.toFixed(1)}% green cover, ${avg.water.toFixed(1)}% water cover and ${avg.built.toFixed(0)} buildings/km2.`;
+      document.getElementById("signatureBars").innerHTML = [
+        ["Green", avg.green / 20 * 100, `${avg.green.toFixed(1)}%`, C.leaf],
+        ["Water", avg.water / 6 * 100, `${avg.water.toFixed(1)}%`, C.water],
+        ["Built", avg.built / 120 * 100, `${avg.built.toFixed(0)}/km2`, C.built]
+      ].map(([label,w,val,color]) => `<div class="metric-row"><span>${label}</span><div class="track"><div class="fill" style="width:${clamp(w,0,100)}%;background:${color}"></div></div><strong>${val}</strong></div>`).join("");
+      const summary = {"Green-rich":0,"Water-linked":0,"Built-up":0,"Mixed":0};
+      hotspots.forEach(f => summary[f.properties.habitat_setting || "Mixed"]++);
+      mixChart.data.labels = Object.keys(summary);
+      mixChart.data.datasets[0].data = Object.values(summary);
+      mixChart.data.datasets[0].backgroundColor = Object.keys(summary).map(k => settingColors[k]);
+      mixChart.update();
+    }
+
+    function updateSelectedArea(feature) {
+      const p = feature.properties;
+      document.getElementById("selectedTitle").textContent = p.msoa21nm;
+      document.getElementById("selectedText").textContent = `${p.lad22nm}. Habitat setting: ${p.habitat_setting}.`;
+      document.getElementById("selRecords").textContent = fmt(p.bird_count);
+      document.getElementById("selGreen").textContent = `${Number(p.green_pct).toFixed(1)}%`;
+      document.getElementById("selWater").textContent = `${Number(p.water_pct).toFixed(1)}%`;
+      document.getElementById("selBuilt").textContent = `${Number(p.building_density).toFixed(0)}`;
+      habitatRadar.data.datasets[0].data = [
+        clamp(p.green_pct / 20 * 100, 0, 100),
+        clamp(p.water_pct / 6 * 100, 0, 100),
+        clamp(p.building_density / 120 * 100, 0, 100),
+        clamp(p.bird_count / 1000 * 100, 0, 100)
+      ];
+      habitatRadar.update();
+    }
+
+    function initExplorerMap() {
+      explorerMap = makeMap("explorerMap");
+      explorerLayer = L.geoJSON(msoaData, {
+        style: explorerStyle,
+        onEachFeature: (feature, layer) => {
+          layer.on("click", () => {
+            updateAttention(feature);
+            addCompare(feature);
+          });
+        }
+      }).addTo(explorerMap);
+      explorerMap.fitBounds(explorerLayer.getBounds(), { padding: [24,24] });
+      renderLegend("explorerLegend", Object.entries(attentionColors).map(([label,color]) => ({label,color})));
+    }
+
+    function updateAttention(feature) {
+      const p = feature.properties;
+      document.getElementById("attentionTitle").textContent = p.msoa21nm;
+      document.getElementById("attentionCard").innerHTML = `<dl>
+        <div><dt>Bird count</dt><dd>${fmt(p.bird_count)}</dd></div>
+        <div><dt>Dominant species</dt><dd>${p.dominant_species}</dd></div>
+        <div><dt>Habitat score</dt><dd>${p.habitat_score}/100</dd></div>
+        <div><dt>Attention zone</dt><dd>${p.attention_zone}</dd></div>
+      </dl>`;
+    }
+
+    function addCompare(feature) {
+      if (!compareSelection.find(f => f.properties.msoa21cd === feature.properties.msoa21cd)) {
+        compareSelection.push(feature);
+        if (compareSelection.length > 2) compareSelection.shift();
+      }
+      renderCompare();
+    }
+
+    function renderCompare() {
+      const box = document.getElementById("compareTable");
+      if (compareSelection.length < 2) {
+        box.textContent = compareSelection.length ? "Select one more MSOA to compare." : "Choose two MSOAs on the map.";
+      } else {
+        const [a,b] = compareSelection.map(f => f.properties);
+        box.innerHTML = `<dl>
+          <div><dt>Area A</dt><dd>${a.msoa21nm}</dd></div>
+          <div><dt>Area B</dt><dd>${b.msoa21nm}</dd></div>
+          <div><dt>Bird records</dt><dd>${fmt(a.bird_count)} vs ${fmt(b.bird_count)}</dd></div>
+          <div><dt>Habitat score</dt><dd>${a.habitat_score} vs ${b.habitat_score}</dd></div>
+          <div><dt>Green</dt><dd>${a.green_pct.toFixed(1)}% vs ${b.green_pct.toFixed(1)}%</dd></div>
+          <div><dt>Water</dt><dd>${a.water_pct.toFixed(1)}% vs ${b.water_pct.toFixed(1)}%</dd></div>
+        </dl>`;
+      }
+      compareChart.data.datasets = compareSelection.map((f,i) => {
+        const p = f.properties;
+        const color = [C.red, C.water][i];
+        return {
+          label: p.msoa21nm,
+          data: [clamp(p.green_pct/20*100,0,100), clamp(p.water_pct/6*100,0,100), clamp(p.building_density/120*100,0,100), clamp(p.bird_count/1000*100,0,100)],
+          borderColor: color,
+          backgroundColor: color + "33"
+        };
+      });
+      compareChart.update();
+    }
+
+    function bindUI() {
+      document.querySelectorAll("#topMode button").forEach(b => b.addEventListener("click", () => {
+        if (!b.dataset.mode) return;
+        document.querySelectorAll("#topMode button").forEach(x => x.classList.toggle("active", x === b));
+        updateTopChart(b.dataset.mode);
+      }));
+      document.querySelectorAll("#monthlyFocus button").forEach(b => b.addEventListener("click", () => {
+        if (!b.dataset.species) return;
+        document.querySelectorAll("#monthlyFocus button").forEach(x => x.classList.toggle("active", x === b));
+        updateMonthlyFocus(b.dataset.species);
+      }));
+      document.getElementById("replayTop").addEventListener("click", () => {
+        ["top", "selected", "logic", "top"].forEach((mode, index) => {
+          setTimeout(() => {
+            document.querySelectorAll("#topMode button[data-mode]").forEach(x => x.classList.toggle("active", x.dataset.mode === mode));
+            updateTopChart(mode);
+          }, index * 850);
+        });
+      });
+      document.getElementById("playSeasons").addEventListener("click", () => {
+        const steps = ["Common Swift", "Barn Swallow", "House Martin", "all"];
+        steps.forEach((sp, index) => {
+          setTimeout(() => {
+            document.querySelectorAll("#monthlyFocus button[data-species]").forEach(x => x.classList.toggle("active", x.dataset.species === sp));
+            updateMonthlyFocus(sp);
+            selectedSpecies = sp === "all" ? "Common Swift" : sp;
+            selectedSeason = index === 0 ? "Summer" : index === 1 ? "Spring" : "Autumn";
+            if (movementLayer) {
+              movementLayer.setStyle(movementStyle);
+              updateBoroughChart();
+              drawButtons("speciesToggle", species, selectedSpecies, value => { selectedSpecies = value; movementLayer.setStyle(movementStyle); updateBoroughChart(); });
+              drawButtons("seasonToggle", seasons, selectedSeason, value => { selectedSeason = value; movementLayer.setStyle(movementStyle); updateBoroughChart(); });
+            }
+          }, index * 950);
+        });
+      });
+      document.querySelectorAll("#movementTabs button").forEach(b => b.addEventListener("click", () => {
+        document.querySelectorAll("#movementTabs button").forEach(x => x.classList.toggle("active", x === b));
+        document.querySelectorAll(".subpanel").forEach(p => p.classList.toggle("active", p.dataset.panel === b.dataset.tab));
+      }));
+      document.querySelectorAll("#habitatLayers button").forEach(b => b.addEventListener("click", () => {
+        document.querySelectorAll("#habitatLayers button").forEach(x => x.classList.toggle("active", x === b));
+        habitatLayerMode = b.dataset.layer;
+        document.getElementById("habitatModeTitle").textContent = b.textContent;
+        habitatLayer.setStyle(habitatStyle);
+        updateHabitatLegend();
+      }));
+      document.getElementById("thresholdSlider").addEventListener("input", e => {
+        threshold = Number(e.target.value);
+        document.getElementById("thresholdLabel").textContent = `${threshold}+`;
+        habitatLayer.setStyle(habitatStyle);
+        updateHabitatStats();
+      });
+      document.getElementById("clearCompare").addEventListener("click", () => { compareSelection = []; renderCompare(); });
+      document.getElementById("coreFocus").addEventListener("click", () => {
+        const f = msoaData.features.find(x => x.properties.attention_zone === "Stable Habitat Core");
+        const layer = explorerLayer.getLayers().find(l => l.feature.properties.msoa21cd === f?.properties.msoa21cd);
+        if (layer) { explorerMap.fitBounds(layer.getBounds(), { padding: [80,80], maxZoom: 12 }); layer.fire("click"); }
+      });
+      document.querySelectorAll(".planning-card").forEach(card => card.addEventListener("click", () => {
+        document.querySelectorAll(".planning-card").forEach(x => x.classList.toggle("active", x === card));
+        const copy = {
+          protect: ["Protect stable habitat cores", "Start from repeated hotspots that overlap measurable habitat. These are the strongest candidates for conservation attention."],
+          connect: ["Connect potential corridors", "Use green and blue links to connect outer-London habitat edges and reduce fragmentation."],
+          buffer: ["Buffer urban pressure zones", "Monitor places where bird records meet high building density and potential disturbance."],
+          monitor: ["Monitor evidence limits", "Citizen-science records reveal observation intensity. Repeated surveys are needed before making abundance claims."]
+        }[card.dataset.plan];
+        document.getElementById("planTitle").textContent = copy[0];
+        document.getElementById("planText").textContent = copy[1];
+      }));
+      const sections = ["introduction","movement","habitat","explorer","future"];
+      let idx = 0;
+      document.getElementById("nextBtn").addEventListener("click", () => {
+        document.getElementById(sections[idx % sections.length]).scrollIntoView({ behavior: "smooth", block: "start" });
+        idx++;
+      });
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          document.querySelectorAll(".nav-links a").forEach(a => a.classList.toggle("active", a.getAttribute("href") === `#${entry.target.id}`));
+          setTimeout(() => { movementMap?.invalidateSize(); habitatMap?.invalidateSize(); explorerMap?.invalidateSize(); }, 120);
+        });
+      }, { threshold: 0.35 });
+      document.querySelectorAll("section").forEach(s => obs.observe(s));
+    }
+
+    let lastTrail = 0;
+    document.addEventListener("mousemove", event => {
+      const now = performance.now();
+      if (now - lastTrail < 180) return;
+      lastTrail = now;
+      const el = document.createElement("span");
+      el.className = "trail-bird";
+      el.style.left = `${event.clientX + 10}px`;
+      el.style.top = `${event.clientY + 8}px`;
+      document.getElementById("cursorTrail").appendChild(el);
+      setTimeout(() => el.remove(), 900);
+    });
+
+    Promise.all([
+      fetch("data/site_data.json").then(r => r.json()),
+      fetch("data/msoa_site.geojson").then(r => r.json())
+    ]).then(([data, geo]) => {
+      siteData = data;
+      msoaData = geo;
+      initCharts();
+      initMovementMap();
+      initHabitatMap();
+      initExplorerMap();
+      bindUI();
+      updateHabitatStats();
+    }).catch(error => {
+      console.error(error);
+      alert("Could not load data/site_data.json or data/msoa_site.geojson.");
+    });
+  </script>
+</body>
+</html>
