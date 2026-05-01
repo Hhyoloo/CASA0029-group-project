@@ -1,22 +1,23 @@
 🔗 Live Website: https://hhyoloo.github.io/CASA0029-group-project/
 
 📍 Module: CASA0029 Data Visualisation
-
 👥 Group 5
 
 # Urban Flyways in London
 
 *A Spatiotemporal Analysis of Migratory Bird Distribution, Urban Habitat Conditions and Ecological Attention Zones*
 
+---
+
 ## Project Overview
 
-This project investigates how migratory bird observations vary across London through different seasons, and how urban environmental conditions relate to hotspot formation and potential ecological pressure.
+This project explores how migratory bird observations vary across London over time, and how these patterns relate to urban environmental conditions and potential ecological pressure.
 
-Using bird observation records from NBN Atlas, environmental layers derived from OpenStreetMap, and MSOA-level spatial aggregation, we developed an interactive website that combines spatial storytelling, statistical comparison and planning-oriented interpretation.
+Using bird observation data from **NBN Atlas**, combined with environmental layers derived from **OpenStreetMap**, and aggregated at the **MSOA level**, we developed an interactive web-based application that integrates spatial exploration, comparative analysis and planning-oriented interpretation.
 
-Three focal migratory bird species — **Swift, Swallow and House Martin** — were selected from the ten most frequently recorded migratory species because they show distinct seasonal rhythms and different ways of using urban environments.
+Three migratory species — **Swift, Swallow and House Martin** — were selected from the ten most frequently recorded species due to their distinct seasonal behaviour and different relationships with urban environments.
 
-The website aims to move from simple observation mapping towards a clearer spatial explanation of where ecological attention may be needed in London.
+Rather than simply mapping observations, the project aims to interpret **where ecological attention may be needed** in London.
 
 ---
 
@@ -25,13 +26,13 @@ The website aims to move from simple observation mapping towards a clearer spati
 * Why were Swift, Swallow and House Martin selected as focal species?
 * How do bird hotspots vary across seasons in London?
 * What urban environmental conditions distinguish hotspot and non-hotspot areas?
-* Which urban areas may deserve ecological attention under stronger habitat pressure?
+* Which areas may require ecological attention under stronger habitat pressure?
 
 ---
 
 ## Website Structure
 
-The website is organised into five main sections:
+The website is organised into five sections:
 
 * **Overview**
 * **Flight Patterns**
@@ -39,11 +40,9 @@ The website is organised into five main sections:
 * **Attention Zones**
 * **Future**
 
-The analytical narrative follows a progressive structure:
+The analytical flow follows:
 
-**species selection → seasonal dynamics → hotspot identification → environmental comparison → habitat pressure interpretation → planning-sensitive areas**
-
-Three interactive modules are embedded across the website, supported by two statistical visualisations.
+**species selection → seasonal patterns → hotspot identification → environmental comparison → habitat pressure → ecological attention**
 
 ---
 
@@ -51,90 +50,110 @@ Three interactive modules are embedded across the website, supported by two stat
 
 ### Interactive Visualisation 1 — Spatial Hotspots
 
-This section explores where bird observations concentrate across seasons.
+This section explores where bird observations concentrate over time.
 
-Main interactions include:
+Main interactions:
 
 * species switching
 * seasonal switching
-* MSOA hotspot comparison
-* hotspot ranking feedback
-
-This module focuses on identifying where and when bird activity becomes spatially concentrated.
+* MSOA-level hotspot comparison
+* hover-based feedback
 
 ---
 
 ### Interactive Visualisation 2 — Urban Habitat Explorer
 
-This section examines environmental conditions associated with hotspot areas.
+This section examines environmental characteristics of hotspot areas.
 
-Main interactions include:
+Main interactions:
 
-* environmental layer switching
-* hotspot click comparison
-* local habitat profile feedback
+* environmental condition comparison
+* hotspot profile interpretation
+* habitat type classification
 
-The module allows comparison of green space, water proximity and built density across selected areas.
+It focuses on three key dimensions:
+
+* green coverage
+* water proximity
+* built intensity
 
 ---
 
-### Interactive Visualisation 3 — Attention Zone Classification
+### Interactive Visualisation 3 — Habitat Comparison Tool
 
-This section interprets areas where bird hotspots overlap with stronger urban pressure.
+This module allows direct comparison between different habitat types.
 
-It introduces Bird Habitat Pressure (BHP) as a simplified planning-oriented indicator.
+Main interactions:
 
-Main outputs include:
+* dual profile selection
+* dynamic chart comparison
+* difference interpretation (A − B)
+
+It helps explain how environmental conditions differ across hotspot types.
+
+---
+
+### Interactive Visualisation 4 — Attention Zones
+
+This section introduces **Bird Habitat Pressure (BHP)** as a simplified indicator.
+
+Outputs include:
 
 * pressure classification
 * ecological attention zones
-* suggested spatial interpretation
+* planning-oriented interpretation
 
 ---
 
 ## Statistical Visualisations
 
-### Top 10 Migratory Species Chart
+### Top 10 Migratory Species
 
-Used to explain why three focal species were selected.
+Used to justify species selection.
 
-### Monthly Seasonal Pattern Chart
+### Monthly Seasonal Pattern
 
-Used to show seasonal differences across selected species.
+Used to show temporal variation in bird observations.
 
 ---
 
 ## Data Sources
 
-| Data                 | Variables                                        | Source               |
-| -------------------- | ------------------------------------------------ | -------------------- |
-| Bird observations    | scientific_name, event_date, latitude, longitude | NBN Atlas            |
-| Green infrastructure | parks, woodland                                  | OpenStreetMap        |
-| Blue infrastructure  | rivers, lakes                                    | OpenStreetMap        |
-| Built environment    | roads, buildings                                 | OpenStreetMap        |
-| Boundary             | MSOA polygons                                    | ONS Census Geography |
+| Data                 | Variables                  | Source        |
+| -------------------- | -------------------------- | ------------- |
+| Bird observations    | species, date, coordinates | NBN Atlas     |
+| Green infrastructure | parks, woodland            | OpenStreetMap |
+| Blue infrastructure  | rivers, lakes              | OpenStreetMap |
+| Built environment    | roads, buildings           | OpenStreetMap |
+| Boundary             | MSOA polygons              | ONS Geography |
 
 ---
 
 ## Repository Structure
 
-```text id="bqun2v"
+```text
 ├── index.html
 ├── style.css
-├── app.js
+├── scripts/
+│   ├── bhp.js
+│   ├── chart.js
+│   ├── map.js
+│   ├── msoa3d.js
+│   ├── site.js
+│   ├── ui.js
 ├── data/
-│   ├── birds.xlsx
-│   ├── msoa.geojson
-│   ├── hotspot_data.geojson
-│   ├── bhp_data.geojson
+│   ├── bird_hotspot.geojson
+│   ├── birds_msoa_hotspots.geojson
+│   ├── urban_condition_summary.json
+│   ├── woodland_final.geojson
+│   ├── water_final.geojson
+│   ├── building_centroid_10.geojson
 ├── images/
 │   ├── swift.jpg
 │   ├── swallow.jpg
-│   ├── housemartin.jpg
-│   ├── london_background.jpg
-├── charts/
-│   ├── top10_species.png
-│   ├── monthly_pattern.png
+│   ├── house-martin.jpg
+│   ├── bird-cursor.svg
+│   ├── bird-cursor-open.svg
 ├── README.md
 ```
 
@@ -143,51 +162,53 @@ Used to show seasonal differences across selected species.
 ## How to Run Locally
 
 1. Clone the repository
-2. Open the project folder in **VS Code**
+2. Open in **VS Code**
 3. Run using **Live Server**
-4. Open `index.html` in browser
+4. Open `index.html`
 
-### Important
-
-GeoJSON files may not load correctly if opened directly in browser. A local server environment is required.
+⚠️ Note: GeoJSON files require a local server (will not load via direct file opening)
 
 ---
 
 ## Planning Relevance
 
-This project explores how bird observation patterns can support urban ecological interpretation.
+This project links ecological observation data with spatial planning interpretation.
 
-Potential planning relevance includes:
+Potential relevance includes:
 
-* identifying ecologically sensitive hotspot areas
-* recognising pressure-sensitive urban zones
-* supporting biodiversity-oriented green connectivity
-* informing development-sensitive ecological thinking
+* identifying ecological hotspots
+* recognising pressure-sensitive urban areas
+* supporting biodiversity-aware planning
+* improving understanding of urban ecological patterns
 
 ---
 
 ## Limitations
 
-* Observation data may contain reporting bias.
-* Environmental indicators simplify ecological relationships.
-* Species-specific habitat behaviour cannot be fully explained by urban form alone.
+* Observation data may contain reporting bias
+* Environmental indicators simplify complex ecological processes
+* Species behaviour cannot be fully explained by urban form alone
 
 ---
 
 ## Team Contributions
 
-| Task Name                                                                       | Major Contributors     | Additional Contributors | Use of AI Tools in this Task                                                                                                                                                  |
-| ------------------------------------------------------------------------------- | ---------------------- | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Concept Development and overall project planning                                | All team members       |                         | No AI use                                                                                                                                                                     |
-| Indicator design (BHP), methodology development and Interactive Visualisation 3 | Xuchen Xi              |                         | ChatGPT was used only for limited language refinement during drafting; methodological design and coding decisions were independently developed and checked against literature |
-| Interactive Visualisation 1, statistical charts and website text writing        | Xiaoyi Wang            |                         | AI tools were used only to improve wording clarity in explanatory text; chart design and visual outputs were manually produced and adjusted                                   |
-| Interactive Visualisation 2 and website framework                               | Yutong Xu              |                         | ChatGPT was used to assist front-end debugging, layout refinement and interface adjustment; final structure and interaction logic were manually revised                       |
-| Website content integration                                                     | Xiaoyi Wang, Xuchen Xi | Yutong Xu               | ChatGPT was used selectively for wording refinement only                                                                                                                      |
+| Task Name                       | Major Contributors     | Additional Contributors | Use of AI Tools             |
+| ------------------------------- | ---------------------- | ----------------------- | --------------------------- |
+| Concept Development             | All members            |                         | No AI use                   |
+| BHP indicator + Visualisation 3 | Xuchen Xi              |                         | Minor language refinement   |
+| Visualisation 1 + charts        | Xiaoyi Wang            |                         | AI for wording only         |
+| Visualisation 2 + web framework | Yutong Xu              |                         | AI for debugging and layout |
+| Integration                     | Xiaoyi Wang, Xuchen Xi | Yutong Xu               | AI for wording refinement   |
 
 ---
 
 ## Use of AI Tools
 
-AI tools were used only for limited technical debugging, wording refinement and front-end adjustment.
+AI tools were used for:
 
-All spatial analysis, methodological interpretation, indicator logic and final outputs were manually checked, revised and integrated by the group.
+* front-end debugging
+* layout refinement
+* wording improvement
+
+All analytical design, methodology, and interpretation were independently developed and validated by the team.
