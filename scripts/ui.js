@@ -1,4 +1,4 @@
-/* Unified site interactions. Interaction 2 is preserved via scripts/chart.js + scripts/map.js. */
+﻿/* Unified site interactions. Interaction 2 is preserved via scripts/chart.js + scripts/map.js. */
 
 const sections = Array.from(document.querySelectorAll("main > section"));
 const nextBtn = document.getElementById("nextBtn");
@@ -131,7 +131,7 @@ function setSpeciesProfile(name) {
   el.innerHTML = `
     <a class="species-wiki-link" href="${p.url}" target="_blank" rel="noopener" title="Open ${name} on Wikipedia">
       <img src="${p.img}" alt="${name}">
-      <span>Wikipedia ↗</span>
+      <span>Wikipedia →</span>
     </a>
     <strong>${name}</strong>
     <p>${p.text}</p>
@@ -380,29 +380,29 @@ function plotCompare() {
   const cats = ["Records", "Green", "Water", "Built"];
   const aVals = compareAreas[a];
   const bVals = compareAreas[b];
-  const diff = aVals.map((v, i) => v - bVals[i]);
-
+  const diffVals = aVals.map((v, i) => v - bVals[i]);
   Plotly.react(
     "compareAreaChart",
     [
       { type: "bar", name: a, x: cats, y: aVals, marker: { color: "#86a172", line: { color: "rgba(38,49,40,.18)", width: 1 } }, hovertemplate: `<b>${a}</b><br>%{x}: %{y}<extra></extra>` },
       { type: "bar", name: b, x: cats, y: bVals, marker: { color: "#83b9c2", line: { color: "rgba(38,49,40,.18)", width: 1 } }, hovertemplate: `<b>${b}</b><br>%{x}: %{y}<extra></extra>` },
-      { type: "scatter", mode: "lines+markers", name: "Difference", x: cats, y: diff, yaxis: "y2", line: { color: "#c98363", width: 3, shape: "spline" }, marker: { size: 9, color: "#c98363" }, hovertemplate: "Difference<br>%{x}: %{y:+.0f}<extra></extra>" }
+      { type: "scatter", mode: "lines+markers", name: "Difference", x: cats, y: diffVals, yaxis: "y2", line: { color: "#c78666", width: 3, shape: "spline" }, marker: { size: 8, color: "#c78666" }, hovertemplate: `<b>A - B</b><br>%{x}: %{y}<extra></extra>` }
     ],
     {
       barmode: "group",
-      height: 520,
-      margin: { l: 54, r: 54, t: 70, b: 80 },
+      height: 430,
+      margin: { l: 58, r: 68, t: 58, b: 78 },
       paper_bgcolor: "rgba(0,0,0,0)",
       plot_bgcolor: "rgba(255,253,246,.38)",
       font: { family: "Manrope, sans-serif", color: "#263228", size: 13 },
-      title: { text: "Interactive habitat profile comparison", x: 0.02, y: 0.98, xanchor: "left", font: { size: 20, color: "#263228" } },
-      legend: { orientation: "h", x: 0, y: -0.18 },
+      title: { text: "Interactive habitat profile comparison", x: 0.02, y: 0.98, xanchor: "left", yanchor: "top", font: { size: 20, color: "#263228" } },
+      legend: { orientation: "h", x: 0.02, y: -0.10, xanchor: "left", yanchor: "top", bgcolor: "rgba(255,253,246,0)", borderwidth: 0, font: { size: 13 } },
       yaxis: { title: "Normalised score", range: [0, 100], gridcolor: "rgba(38,49,40,.08)", zeroline: false },
-      yaxis2: { title: "A − B", overlaying: "y", side: "right", range: [-80, 80], gridcolor: "rgba(0,0,0,0)", zerolinecolor: "rgba(38,49,40,.18)" },
+      yaxis2: { title: "A - B", overlaying: "y", side: "right", range: [-80, 80], zeroline: false, showgrid: false },
       annotations: [
-        { x: "Green", y: Math.max(aVals[1], bVals[1]) + 8, text: "habitat support", showarrow: false, font: { size: 11, color: "#6b766c" } },
-        { x: "Built", y: Math.max(aVals[3], bVals[3]) + 8, text: "urban pressure", showarrow: false, font: { size: 11, color: "#6b766c" } }
+        { x: "Green", y: Math.max(aVals[1], bVals[1]) + 8, text: "green habitat", showarrow: false, font: { size: 11, color: "#6b766c" } },
+        { x: "Water", y: Math.max(aVals[2], bVals[2]) + 8, text: "blue corridor", showarrow: false, font: { size: 11, color: "#6b766c" } },
+        { x: "Built", y: Math.max(aVals[3], bVals[3]) + 8, text: "built context", showarrow: false, font: { size: 11, color: "#6b766c" } }
       ],
       hovermode: "x unified"
     },
@@ -586,10 +586,10 @@ function updateFlight() {
 /* === Final polish interactions === */
 (function(){
   const copy = {
-    H: ['Hᵢ increases BHP.', 'Higher habitat quality means stronger local support for migratory birds.'],
-    C: ['Cᵢ increases BHP.', 'Connectivity means an MSOA can work as a stepping stone in the wider flyway network.'],
-    D: ['Dᵢ reduces BHP.', 'Human disturbance lowers suitability where dense built fabric and activity pressure are high.'],
-    L: ['Lᵢ reduces BHP.', 'Light pollution can disrupt nocturnal orientation, feeding patterns and nesting conditions.']
+    H: ['Hi increases BHP.', 'Higher habitat quality means stronger local support for migratory birds.'],
+    C: ['Ci increases BHP.', 'Connectivity means an MSOA can work as a stepping stone in the wider flyway network.'],
+    D: ['Di reduces BHP.', 'Human disturbance lowers suitability where dense built fabric and activity pressure are high.'],
+    L: ['Li reduces BHP.', 'Light pollution can disrupt nocturnal orientation, feeding patterns and nesting conditions.']
   };
   document.querySelectorAll('.formula-chip').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -655,7 +655,7 @@ function updateFlight() {
   const planCopy = {
     protect: ["01 · Stable Habitat Core", "Protect existing ecological anchors", "Keep mature tree cover, reduce lighting spill, protect nesting opportunities and avoid fragmentation around the strongest BHP areas."],
     connect: ["02 · Potential Corridor", "Connect blue-green stepping stones", "Use street trees, riparian edges, parks and reservoirs to close gaps between observed hotspots and support movement through the city."],
-    retrofit: ["03 · Urban Pressure Area", "Retrofit dense built environments", "Introduce bird-friendly façades, nesting-sensitive renovation, de-paving, acoustic buffering and dark-sky lighting around pressure zones."],
+    retrofit: ["03 · Urban Pressure Area", "Retrofit dense built environments", "Introduce bird-friendly facades, nesting-sensitive renovation, de-paving, acoustic buffering and dark-sky lighting around pressure zones."],
     monitor: ["04 · Attention Zone", "Monitor seasonal change", "Repeat the workflow with future observation records to identify whether hotspots are stable, emerging or declining across seasons."]
   };
   document.querySelectorAll("[data-plan]").forEach(btn => btn.addEventListener("click", () => {
@@ -689,18 +689,18 @@ function updateFlight() {
 
   const initHeroBgMap = () => {
     const el = document.getElementById('heroBgMap');
-    if (!el || typeof L === 'undefined' || window.heroBgMap) return;
-    window.heroBgMap = L.map(el, { zoomControl:false, dragging:false, scrollWheelZoom:false, doubleClickZoom:false, boxZoom:false, keyboard:false, attributionControl:false }).setView([51.5072, -0.1276], 10.75);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { subdomains:'abcd', maxZoom:19 }).addTo(window.heroBgMap);
+    if (!el || typeof L === 'undefined' || window.heroBgMapLeaflet || el._leaflet_id || el.dataset.loaded) return;
+    window.heroBgMapLeaflet = L.map(el, { zoomControl:false, dragging:false, scrollWheelZoom:false, doubleClickZoom:false, boxZoom:false, keyboard:false, attributionControl:false }).setView([51.5072, -0.1276], 10.75);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { subdomains:'abcd', maxZoom:19 }).addTo(window.heroBgMapLeaflet);
     const flyway = [[51.49,-0.36],[51.505,-0.28],[51.515,-0.18],[51.51,-0.08],[51.50,0.04],[51.49,0.14]];
-    L.polyline(flyway,{color:'#7fb4bd',weight:7,opacity:.72,lineCap:'round'}).addTo(window.heroBgMap);
-    L.polyline(flyway,{color:'#dce97a',weight:3,opacity:.9,lineCap:'round'}).addTo(window.heroBgMap);
-    flyway.forEach((p,i)=>L.circleMarker(p,{radius:6+i%2*2,color:'#263228',weight:1,fillColor:'#dce97a',fillOpacity:.9,opacity:.45}).addTo(window.heroBgMap));
-    setTimeout(()=>window.heroBgMap.invalidateSize(true), 250);
+    L.polyline(flyway,{color:'#7fb4bd',weight:7,opacity:.72,lineCap:'round'}).addTo(window.heroBgMapLeaflet);
+    L.polyline(flyway,{color:'#dce97a',weight:3,opacity:.9,lineCap:'round'}).addTo(window.heroBgMapLeaflet);
+    flyway.forEach((p,i)=>L.circleMarker(p,{radius:6+i%2*2,color:'#263228',weight:1,fillColor:'#dce97a',fillOpacity:.9,opacity:.45}).addTo(window.heroBgMapLeaflet));
+    setTimeout(()=>window.heroBgMapLeaflet.invalidateSize(true), 250);
     let z = 11;
     setInterval(()=>{
       z = z === 11 ? 11.35 : 11;
-      window.heroBgMap.flyTo([51.5072, -0.1276], z, {duration: 3.8, easeLinearity:.2});
+      window.heroBgMapLeaflet.flyTo([51.5072, -0.1276], z, {duration: 3.8, easeLinearity:.2});
     }, 5200);
   };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initHeroBgMap); else initHeroBgMap();
@@ -708,10 +708,116 @@ function updateFlight() {
 
 /* V9: force visible London map under cover after all layout shifts */
 window.addEventListener('load', () => {
-  if (window.heroBgMap) {
+  if (window.heroBgMapLeaflet && typeof window.heroBgMapLeaflet.invalidateSize === 'function') {
     [120, 550, 1200].forEach(t => setTimeout(() => {
-      window.heroBgMap.invalidateSize(true);
-      window.heroBgMap.setView([51.5072, -0.1276], 10.75, {animate:false});
+      if (!window.heroBgMapLeaflet || typeof window.heroBgMapLeaflet.invalidateSize !== 'function') return;
+      window.heroBgMapLeaflet.invalidateSize(true);
+      window.heroBgMapLeaflet.setView([51.5072, -0.1276], 10.75, {animate:false});
     }, t));
   }
 });
+
+/* V16: remove encoding artefacts from rendered copy */
+(function () {
+  const replacements = [
+    [/馃惁/g, ""],
+    [/鈫\?/g, "→"],
+    [/鈥檚/g, "'s"],
+    [/鈭\?/g, "−"],
+    [/ · /g, " · "],
+    [/·/g, "·"],
+    [/岬\?/g, "i "],
+    [/莽/g, "c"],
+    [/虏/g, "²"],
+    [/漏/g, "©"],
+    [/鉁\?/g, "Email"],
+    [/鈥/g, "'"],
+    [/檚/g, "'s"]
+  ];
+
+  function cleanText(value) {
+    return replacements.reduce((text, [pattern, replacement]) => text.replace(pattern, replacement), value);
+  }
+
+  function cleanNode(node) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const cleaned = cleanText(node.nodeValue || "");
+      if (cleaned !== node.nodeValue) node.nodeValue = cleaned;
+      return;
+    }
+    if (node.nodeType !== Node.ELEMENT_NODE) return;
+    if (["SCRIPT", "STYLE", "NOSCRIPT"].includes(node.tagName)) return;
+    node.childNodes.forEach(cleanNode);
+  }
+
+  function runCleanup() {
+    cleanNode(document.body);
+    document.querySelectorAll(".brand span, .bird-mark, .bird-dot-3d").forEach(el => {
+      el.textContent = "";
+      el.setAttribute("aria-hidden", "true");
+    });
+    document.querySelectorAll("[data-var='H']").forEach(el => el.textContent = "Hi Habitat quality");
+    document.querySelectorAll("[data-var='C']").forEach(el => el.textContent = "Ci Connectivity");
+    document.querySelectorAll("[data-var='D']").forEach(el => el.textContent = "Di Disturbance");
+    document.querySelectorAll("[data-var='L']").forEach(el => el.textContent = "Li Light pollution");
+    const formulaExplain = document.getElementById("formulaExplain");
+    if (formulaExplain && formulaExplain.textContent.includes("i increases")) {
+      formulaExplain.innerHTML = "<strong>Hi increases BHP.</strong><span>Higher habitat quality means stronger local support for migratory birds.</span>";
+    }
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", runCleanup);
+  else runCleanup();
+  window.addEventListener("load", runCleanup);
+  if (document.body && !window.__encodingCleanupObserver) {
+    window.__encodingCleanupObserver = new MutationObserver(() => window.requestAnimationFrame(runCleanup));
+    window.__encodingCleanupObserver.observe(document.body, { childList: true, subtree: true, characterData: true });
+  }
+})();
+
+/* V13: lightweight depth and interaction polish */
+(function () {
+  return;
+  function addTakeaway(sectionId, title, items) {
+    const section = document.getElementById(sectionId);
+    if (!section || section.querySelector(".takeaway-strip")) return;
+    const strip = document.createElement("div");
+    strip.className = "takeaway-strip";
+    strip.innerHTML = `
+      <strong>${title}</strong>
+      <div>${items.map((item, i) => `<button type="button" class="${i === 0 ? "active" : ""}" data-takeaway="${i}">${item[0]}</button>`).join("")}</div>
+      <p>${items[0][1]}</p>
+    `;
+    const intro = section.querySelector(".section-intro, .soft-card, .bhp-map-copy, .team-heading");
+    if (intro && intro.parentElement === section) intro.insertAdjacentElement("afterend", strip);
+    else section.insertAdjacentElement("afterbegin", strip);
+    const text = strip.querySelector("p");
+    strip.querySelectorAll("button").forEach(button => {
+      button.addEventListener("click", () => {
+        strip.querySelectorAll("button").forEach(b => b.classList.remove("active"));
+        button.classList.add("active");
+        text.textContent = items[Number(button.dataset.takeaway)][1];
+      });
+    });
+  }
+
+  addTakeaway("environmental-profiles", "Interpretation depth", [
+    ["Green", "Green-rich hotspots are not just prettier areas: they suggest stronger local habitat capacity and lower friction for repeated bird activity."],
+    ["Water", "Water-linked areas help explain movement and feeding corridors, especially where reservoirs and river edges connect otherwise fragmented urban habitat."],
+    ["Built", "Built-up exceptions matter because they reveal where birds may still use dense urban fabric, but where design mitigation is most important."]
+  ]);
+
+  addTakeaway("compare-areas", "How to read the comparison", [
+    ["Records", "The record bar shows observation intensity, but it should be interpreted alongside habitat indicators because records can be affected by access and reporting effort."],
+    ["Habitat", "Green and water reveal whether bird activity aligns with ecological support rather than only with human observation density."],
+    ["Pressure", "Built pressure shows where planning action should shift from protection toward retrofit, greening, and light-sensitive design."]
+  ]);
+
+  addTakeaway("limitations", "Evidence caution", [
+    ["Bias", "Observation records are useful but not the same as true abundance; visible and accessible places can be over-represented."],
+    ["Scale", "MSOA analysis is a screening layer. Site-level design would still need finer habitat, building, and lighting evidence."],
+    ["Next", "A stronger next version would combine survey effort, land cover, night lights, and seasonal nesting evidence."]
+  ]);
+})();
+
+
