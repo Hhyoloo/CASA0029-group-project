@@ -97,7 +97,7 @@
   bhpMap.createPane("bhpPolygons"); bhpMap.getPane("bhpPolygons").style.zIndex = 420;
   bhpMap.createPane("bhpMarkers"); bhpMap.getPane("bhpMarkers").style.zIndex = 620;
   L.control.zoom({ position: "topright" }).addTo(bhpMap);
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", { attribution: "&copy; OpenStreetMap &copy; CARTO", opacity: 0.60, subdomains: "abcd", maxZoom: 19 }).addTo(bhpMap);
+  L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=cb1_5ea1_1_73acfe8ce2a5c34ddc854035", { attribution: "&copy; OpenStreetMap &copy; CARTO", opacity: 0.60, subdomains: "abcd", maxZoom: 19 }).addTo(bhpMap);
 
   function buildSummary(){
     if (!bhpData) return; const counts = { "Stable Habitat Core":0, "Potential Corridor":0, "Attention Zone":0, "Urban Pressure Area":0 };
