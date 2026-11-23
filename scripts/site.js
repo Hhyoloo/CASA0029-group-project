@@ -168,7 +168,7 @@ function createMap(id) {
   if (!document.getElementById(id)) return null;
   const instance = L.map(id, { zoomControl: false, preferCanvas: false }).setView([51.5072, -0.1276], 10);
   L.control.zoom({ position: "bottomright" }).addTo(instance);
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+  L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?key=cb1_5ea1_1_73acfe8ce2a5c34ddc854035", {
     attribution: "&copy; OpenStreetMap &copy; CARTO",
     opacity: 0.72,
     subdomains: "abcd",
