@@ -13,7 +13,7 @@ map.getPane("msoaPane").style.zIndex = 430;
 map.createPane("contextPane");
 map.getPane("contextPane").style.zIndex = 460;
 
-L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=cb1_5ea1_1_73acfe8ce2a5c34ddc854035", {
   attribution: "&copy; OpenStreetMap &copy; CARTO",
   opacity: 0.7,
   subdomains: "abcd",
