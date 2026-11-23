@@ -1,5 +1,10 @@
 ﻿/* Unified site interactions. Interaction 2 is preserved via scripts/chart.js + scripts/map.js. */
 
+// CARTO Basemaps API Key
+const CARTO_BASEMAP_API_KEY = "cb1_5ea1_1_73acfe8ce2a5c34ddc854035";
+
+const CARTO_TILE_URL = `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=${encodeURIComponent(CARTO_BASEMAP_API_KEY)}`;
+
 const sections = Array.from(document.querySelectorAll("main > section"));
 const nextBtn = document.getElementById("nextBtn");
 
@@ -523,7 +528,7 @@ if (document.getElementById("flightMap")) {
   window.flightMap.createPane("flightPolygons");
   window.flightMap.getPane("flightPolygons").style.zIndex = 430;
   L.control.zoom({ position: "topright" }).addTo(window.flightMap);
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", { subdomains: "abcd", maxZoom: 19, opacity: 0.74, attribution: "&copy; OpenStreetMap &copy; CARTO" }).addTo(window.flightMap);
+  L.tileLayer(CARTO_TILE_URL, { subdomains: "abcd", maxZoom: 19, opacity: 0.74, attribution: "&copy; OpenStreetMap &copy; CARTO" }).addTo(window.flightMap);
 
   loadFlightGeoJSON().then((d) => { flightData = d; addFlightExtraControls(); updateFlight(); setTimeout(() => window.flightMap.invalidateSize(true), 300); })
   .catch((err) => { console.warn("Flight map data could not be loaded", err); const bars = document.getElementById("flightBars"); if (bars) bars.innerHTML = '<p class="muted-small">Flight GeoJSON could not be loaded. Keep data/birds_msoa_hotspots.geojson beside index.html and open with Live Server.</p>'; });
@@ -646,7 +651,7 @@ function updateFlight() {
   const heroMapEl = document.getElementById("heroMiniMap");
   if (heroMapEl && typeof L !== "undefined" && !window.heroMiniMap) {
     window.heroMiniMap = L.map(heroMapEl, { zoomControl:false, dragging:false, scrollWheelZoom:false, doubleClickZoom:false, boxZoom:false, keyboard:false, attributionControl:false }).setView([51.5072, -0.1276], 10.6);
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {subdomains:"abcd", maxZoom:19, opacity:.95}).addTo(window.heroMiniMap);
+    L.tileLayer(CARTO_TILE_URL, {subdomains:"abcd", maxZoom:19, opacity:.95}).addTo(window.heroMiniMap);
     L.polyline([[51.48,-0.36],[51.49,-0.25],[51.50,-0.16],[51.505,-0.08],[51.50,0.02],[51.49,0.12]],{color:"#78aeb7",weight:5,opacity:.72}).addTo(window.heroMiniMap);
     [[51.50,-0.12],[51.52,-0.05],[51.49,-0.22],[51.54,-0.17],[51.47,0.00]].forEach((p,i)=>L.circleMarker(p,{radius:5+i,color:"#dfe873",fillColor:"#dfe873",fillOpacity:.9,weight:1}).addTo(window.heroMiniMap));
     setTimeout(()=>window.heroMiniMap.invalidateSize(true), 250);
@@ -691,7 +696,7 @@ function updateFlight() {
     const el = document.getElementById('heroBgMap');
     if (!el || typeof L === 'undefined' || window.heroBgMapLeaflet || el._leaflet_id || el.dataset.loaded) return;
     window.heroBgMapLeaflet = L.map(el, { zoomControl:false, dragging:false, scrollWheelZoom:false, doubleClickZoom:false, boxZoom:false, keyboard:false, attributionControl:false }).setView([51.5072, -0.1276], 10.75);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { subdomains:'abcd', maxZoom:19 }).addTo(window.heroBgMapLeaflet);
+    L.tileLayer(CARTO_TILE_URL, { subdomains:'abcd', maxZoom:19 }).addTo(window.heroBgMapLeaflet);
     const flyway = [[51.49,-0.36],[51.505,-0.28],[51.515,-0.18],[51.51,-0.08],[51.50,0.04],[51.49,0.14]];
     L.polyline(flyway,{color:'#7fb4bd',weight:7,opacity:.72,lineCap:'round'}).addTo(window.heroBgMapLeaflet);
     L.polyline(flyway,{color:'#dce97a',weight:3,opacity:.9,lineCap:'round'}).addTo(window.heroBgMapLeaflet);
